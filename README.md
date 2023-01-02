@@ -24,19 +24,19 @@
 
 PARAMETER | TYPE | REQUIRED | DESCRIPTION 
 -------- | --------- | -------- | -------- 
-userId| string | ✔️✔️✔️ | Discord User ID
-imgOptions| object | ✖️✖️✖️ | Customize the card in multiple ways
+userId| `string` | `✔️✔️✔️` | Discord User ID
+imgOptions| `object` | `✖️✖️✖️` | Customize the card in multiple ways
 
 ### imgOptions `🔴NEW!!`
 PARAMETER | TYPE | DEFAULT | DESCRIPTION 
 -------- | --------- | -------- | -------- 
-customTag| string | `✖️` | Text below the user
-customBadges| string[] | `✖️` | Your own png badges `(path and URL)`
-customBackground| string | `✖️` | Change the background to any image `(path and URL)`
-overwriteBadges| boolean | `false` | Merge your badges with the discord defaults
-borderColor| string[] | `✖️` | Hex color of the border, can be gradient if 2 colors are used
-borderAllign| string | `horizontal` | Gradient alignment if 2 colors are used `(horizontal | vertical)`
-presenceStatus| string | `✖️` | User status to be displayed below the avatar (`online | dnd | idle | invisible`)
+customTag| `string` | `✖️` | Text below the user
+customBadges| `string[]` | `✖️` | Your own png badges `path and URL`
+customBackground| `string` | `✖️` | Change the background to any image `path and URL`
+overwriteBadges| `boolean` | `false` | Merge your badges with the discord defaults
+borderColor| `string[]` | `✖️` | Hex color of the border, can be gradient if 2 colors are used
+borderAllign| `string` | `horizontal` | Gradient alignment if 2 colors are used
+presenceStatus| `string` | `✖️` | User status to be displayed below the avatar
 
 #### Returns: **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<**[Buffer](https://nodejs.org/api/buffer.html)**>**
 
@@ -47,18 +47,16 @@ presenceStatus| string | `✖️` | User status to be displayed below the avatar
 const { AttachmentBuilder } = require('discord.js');
 const { profileImage } = require('discord-arts');
 
-await interaction.deferReply()
+await interaction.deferReply();
 
-const user = interaction.options.getUser('user-option')
+const user = interaction.options.getUser('user-option');
 const bufferImg = await profileImage(user.id); // <<<<<<
 const imgAttachment = new AttachmentBuilder(bufferImg, { name: 'profile.png' });
 
 interaction.followUp({ files: [imgAttachment] });
 ```
 
-
 ***
-
 
 ### 🖼️Results 
 
@@ -110,10 +108,10 @@ profileImage('ID', {
 
 > # 💥 Issues / Feedback
 > 
->> ### Any problem or feedback, open an issue in our github repository [here](https://github.com/iAsure/discord-arts)
+> ### Any problem or feedback, open an issue in our github repository [here](https://github.com/iAsure/discord-arts)
 
 
 > # ⭐ Support
 >
->> ### Send me a msg on discord! [iAsure#0001](https://discord.com/users/339919990947971105)
+> ### Send me a msg on discord! [iAsure#0001](https://discord.com/users/339919990947971105)
 
