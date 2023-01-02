@@ -12,5 +12,5 @@ interface profileOptions {
 }
 
 declare module 'discord-arts' {
-    export function profileImage(user: string, options: profileOptions): Promise<Buffer>;
+    export function profileImage(user: string, options?: profileOptions): Promise<Buffer>;
 }
