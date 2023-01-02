@@ -2,13 +2,13 @@ type presenceStatus = 'idle' | 'dnd' | 'online' | 'invisible'
 type borderAllign = 'horizontal' | 'vertical'
 
 interface profileOptions {
-    customTag: string;
-    customBadges: string[];
-    customBackground: string;
-    overwriteBadges: boolean;
-    borderColor: string[];
-    borderAllign: borderAllign;
-    presenceStatus: presenceStatus;
+    customTag?: string;
+    customBadges?: string[];
+    customBackground?: string;
+    overwriteBadges?: boolean;
+    borderColor?: string[];
+    borderAllign?: borderAllign;
+    presenceStatus?: presenceStatus;
 }
 
 declare module 'discord-arts' {
