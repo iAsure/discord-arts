@@ -10,7 +10,14 @@
 </p>
 </div>
 
+<p align="center">
+  <strong>Image generation tools for Discord.JS v13 and v14</strong>
+</p>
+
+***
+
 # 📦 Features
+
 ## 🤖 `profileImage(userId, imgOptions)`
 
 *Generates the card of a user/bot, with its badges.*
@@ -20,48 +27,48 @@ PARAMETER | TYPE | REQUIRED | DESCRIPTION
 userId| string | ✔️✔️✔️ | Discord User ID
 imgOptions| object | ✖️✖️✖️ | Customize the card in multiple ways
 
-#### imgOptions `NEW!!`
+### imgOptions `🔴NEW!!`
 PARAMETER | TYPE | DEFAULT | DESCRIPTION 
 -------- | --------- | -------- | -------- 
-customTag| string | ✖️ | Text below the user
-customBadges| string[] | ✖️ | Use your own png badges (path and URL)
-customBackground| string | ✖️ | Change the background to any image (path and URL)
-overwriteBadges| boolean | false | Merge your badges with the discord defaults
-borderColor| string[] | ✖️ | Hex color of the border, can be gradient if 2 colors are used
-borderAllign| string | 'horizontal' | Gradient alignment (if 2 colors are used)
-presenceStatus| string | ✖️ | User status to be displayed below the avatar 
+customTag| string | `✖️` | Text below the user
+customBadges| string[] | `✖️` | Your own png badges `(path and URL)`
+customBackground| string | `✖️` | Change the background to any image `(path and URL)`
+overwriteBadges| boolean | `false` | Merge your badges with the discord defaults
+borderColor| string[] | `✖️` | Hex color of the border, can be gradient if 2 colors are used
+borderAllign| string | `horizontal` | Gradient alignment if 2 colors are used `(horizontal | vertical)`
+presenceStatus| string | `✖️` | User status to be displayed below the avatar (`online | dnd | idle | invisible`)
 
-Returns: [**Promise**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<**[Buffer](https://nodejs.org/api/buffer.html)**>
+#### Returns: **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<**[Buffer](https://nodejs.org/api/buffer.html)**>**
 
-------------
+***
 
-### 📃 Discord.js Example
+### 📃 Discord.js v14 Example
 ```javascript
 const { AttachmentBuilder } = require('discord.js');
 const { profileImage } = require('discord-arts');
 
-const userId = interaction.options.getUser('user-option').id || interaction.user.id;
-const bufferImg = await profileImage(userId);
+await interaction.deferReply()
+
+const user = interaction.options.getUser('user-option')
+const bufferImg = await profileImage(user.id); // <<<<<<
 const imgAttachment = new AttachmentBuilder(bufferImg, { name: 'profile.png' });
 
-interaction.reply({ files: [imgAttachment] });
+interaction.followUp({ files: [imgAttachment] });
 ```
 
 
-------------
+***
 
 
 ### 🖼️Results 
 
-#### - Default
 ```javascript
 profileImage('ID')
 ```
 ![Default](https://i.imgur.com/HKumM3y.png)
 
-------------
+***
 
-#### - Custom User 1
 ```javascript
 profileImage('ID', {
 	customTag: 'Programmer',
@@ -74,9 +81,8 @@ profileImage('ID', {
 ```
 ![Default](https://i.imgur.com/qkT2DRk.png)
 
-------------
+***
 
-#### - Custom User 2
 ```javascript
 profileImage('ID', {
 	customTag: 'Minecraft Modder',
@@ -88,20 +94,26 @@ profileImage('ID', {
 ```
 ![Default](https://i.imgur.com/Tz4IgNH.png)
 
-------------
+***
 
-#### - Custom Bot
 ```javascript
 profileImage('ID', {
 	customTag: 'Minecraft Bot',
+	customBackground: './imgs/axoBackground.png',
 	borderColor: ['#fe6a90'],
 	presenceStatus: 'online'
 });
 ```
-![Default](https://i.imgur.com/Hw0SEtw.png)
+![Default](https://i.imgur.com/W8PVvOY.png)
 
-------------
+***
 
-# 💥 Issues / Bugs
-### Report [**here**](https://github.com/iAsure/discord-arts)
+> # 💥 Issues / Feedback
+> 
+>> ### Any problem or feedback, open an issue in our github repository [here](https://github.com/iAsure/discord-arts)
+
+
+> # ⭐ Support
+>
+>> ### Send me a msg on discord! [iAsure#0001](https://discord.com/users/339919990947971105)
 
