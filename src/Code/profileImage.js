@@ -137,10 +137,16 @@ async function profileImage(user, options) {
   base.composite(mark, 0, 0, { mode: BLEND_MULTIPLY }).mask(mask);
 
   if (options?.borderColor) {
-    if (options.borderColor.length > 2)
+    const borderColors = []
+    if(typeof options.borderColor == 'string')
+      borderColors.push(options.borderColor)
+    else
+      borderColors.push(...options.borderColor)  
+
+    if (borderColors.length > 2)
       throw new Error(
-        `Discord Arts | Invalid borderColor length (${options.borderColor.length}) must be a maximum of 2 colors`
-      );
+        `Discord Arts | Invalid borderColor length (${borderColors.length}) must be a maximum of 2 colors`
+      ); 
 
     const canvas = createCanvas(885, 303);
     const ctx = canvas.getContext('2d');
@@ -150,8 +156,8 @@ async function profileImage(user, options) {
 
     const grd = ctx.createLinearGradient(0, 0, gradX, gradY);
 
-    for (let i = 0; i < options.borderColor.length; i++) {
-      grd.addColorStop(i, parseHex(options.borderColor[i]));
+    for (let i = 0; i < borderColors.length; i++) {
+      grd.addColorStop(i, parseHex(borderColors[i]));
     }
 
     ctx.fillStyle = grd;

@@ -6,7 +6,7 @@ interface profileOptions {
     customBadges?: string[];
     customBackground?: string;
     overwriteBadges?: boolean;
-    borderColor?: string[];
+    borderColor?: string | string[];
     borderAllign?: borderAllign;
     presenceStatus?: presenceStatus;
 }
