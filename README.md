@@ -34,7 +34,7 @@ customTag| `string` | `✖️` | Text below the user
 customBadges| `string[]` | `✖️` | Your own png badges `path and URL`
 customBackground| `string` | `✖️` | Change the background to any image `path and URL`
 overwriteBadges| `boolean` | `false` | Merge your badges with the discord defaults
-borderColor| `string | string[]` | `✖️` | Hex color of the border, can be gradient if 2 colors are used
+borderColor| `string or string[]` | `✖️` | Hex color of the border, can be gradient if 2 colors are used
 borderAllign| `string` | `horizontal` | Gradient alignment if 2 colors are used
 presenceStatus| `string` | `✖️` | User status to be displayed below the avatar
 
