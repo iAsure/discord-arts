@@ -1,5 +1,5 @@
 const { read, AUTO, MIME_PNG, BLEND_MULTIPLY } = require('jimp');
-const { createCanvas, registerFont } = require('canvas');
+const { createCanvas, GlobalFonts } = require('@napi-rs/canvas');
 const fetch = require('node-fetch');
 const moment = require('moment');
 const path = require('path');
@@ -14,12 +14,10 @@ const {
 const { fixString, lengthString } = require('../Utils/fixString');
 const { parseImg, parsePng, parseHex, isString } = require('../Utils/checks');
 
-registerFont(`${path.join(__dirname, '..', 'Fonts')}/Helvetica.ttf`, {
-  family: 'Helvetica Normal',
-});
-registerFont(`${path.join(__dirname, '..', 'Fonts')}/Helvetica-Bold.ttf`, {
-  family: 'Helvetica Bold',
-});
+GlobalFonts.registerFromPath(
+  `${path.join(__dirname, '..', 'Fonts')}/Helvetica.ttf`,
+  `Helvetica`,
+);
 
 async function profileImage(user, options) {
   if (!user || typeof user !== 'string')
@@ -50,8 +48,8 @@ async function profileImage(user, options) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const userMedida = lengthString(userName, ctx, 'Helvetica Bold', '80');
-  const userFix = fixString(userName, ctx, 'Helvetica Bold', '80', pixelLength);
+  const userMedida = lengthString(userName, ctx, 'Helvetica', '80');
+  const userFix = fixString(userName, ctx, 'Helvetica', '80', pixelLength);
 
   const finalUser =
     userMedida > pixelLength ? userFix + '...' : userName ? userName : '?????';
@@ -60,22 +58,22 @@ async function profileImage(user, options) {
     ? isString(options.customTag, 'customTag')
     : `#${discriminator}`;
 
-  ctx.font = '80px Helvetica Bold';
+  ctx.font = '80px Helvetica';
   ctx.textAlign = 'left';
   ctx.fillStyle = '#FFFFFF';
   ctx.fillText(finalUser, 300, 155);
 
   const userPxWidth = ctx.measureText(finalUser).width;
 
-  ctx.font = '60px Helvetica Normal';
+  ctx.font = '60px Sans';
   ctx.fillStyle = '#c7c7c7';
   ctx.fillText(tag, 300, 215);
 
-  ctx.font = ' 23px Helvetica Normal';
+  ctx.font = ' 23px Sans';
   ctx.textAlign = 'center';
   ctx.fillText(`${moment(+createdTimestamp).format('MMM DD, YYYY')}`, 775, 273);
 
-  const canvasJimp = await read(canvas.toBuffer());
+  const canvasJimp = await read(canvas.toBuffer('image/png'));
   const base = await read(Buffer.from(otherImgs.UserBase, 'base64'));
   const capa = await read(Buffer.from(otherImgs.UserProfile, 'base64'));
   const mask = await read(Buffer.from(otherImgs.mask, 'base64'));

@@ -1,6 +1,6 @@
 {
   "name": "discord-arts",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Image generation tools for Discord.JS v13 and v14.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -11,7 +11,7 @@
     "url": "https://github.com/iAsure/discord-arts.git"
   },
   "dependencies": {
-    "canvas": "^2.10.2",
+    "@napi-rs/canvas": "^0.1.31",
     "jimp": "^0.16.2",
     "moment": "^2.29.4",
     "node-fetch": "^2.6.7"
