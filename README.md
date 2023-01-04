@@ -71,7 +71,7 @@ interaction.followUp({ files: [attachment] });
 > ```javascript
 > profileImage('ID', {
 > 	customTag: 'Programmer',
-> 	customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.> png', './hearth.png'  ],
+> 	customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
 > 	customBackground: 'https://i.imgur.com/DGA63O0.jpg',
 > 	overwriteBadges: true,
 > 	borderColor: ['#841821', '#005b58'],
@@ -85,7 +85,7 @@ interaction.followUp({ files: [attachment] });
 > ```javascript
 > profileImage('ID', {
 > 	customTag: 'Minecraft Modder',
-> 	customBadges: [ './badges/booster.png','./badges/orange.png', './badges/> giveaway.png' ],
+> 	customBadges: [ './badges/booster.png','./badges/orange.png', './badges/giveaway.png' ],
 > 	overwriteBadges: false,
 > 	borderColor: ['#f90257', '#043a92'],
 > 	presenceStatus: 'idle'
