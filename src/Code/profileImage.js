@@ -2,6 +2,7 @@ const { read, AUTO, MIME_PNG, BLEND_MULTIPLY } = require('jimp');
 const { createCanvas, registerFont } = require('canvas');
 const fetch = require('node-fetch');
 const moment = require('moment');
+const path = require('path');
 
 const {
   otherImgs,
@@ -9,13 +10,14 @@ const {
   nitroBadges,
   statusImgs,
 } = require('../../src/Images/profileImage.json');
+
 const { fixString, lengthString } = require('../Utils/fixString');
 const { parseImg, parsePng, parseHex, isString } = require('../Utils/checks');
 
-registerFont(`${process.cwd()}/node_modules/discord-arts/src/Fonts/Helvetica.ttf`, {
+registerFont(`${path.join(__dirname, '..', 'Fonts')}/Helvetica.ttf`, {
   family: 'Helvetica Normal',
 });
-registerFont(`${process.cwd()}/node_modules/discord-arts/src/Fonts/Helvetica-Bold.ttf`, {
+registerFont(`${path.join(__dirname, '..', 'Fonts')}/Helvetica-Bold.ttf`, {
   family: 'Helvetica Bold',
 });
 
@@ -69,7 +71,7 @@ async function profileImage(user, options) {
   ctx.fillStyle = '#c7c7c7';
   ctx.fillText(tag, 300, 215);
 
-  ctx.font = '23px Helvetica Normal';
+  ctx.font = ' 23px Helvetica Normal';
   ctx.textAlign = 'center';
   ctx.fillText(`${moment(+createdTimestamp).format('MMM DD, YYYY')}`, 775, 273);
 
@@ -137,16 +139,15 @@ async function profileImage(user, options) {
   base.composite(mark, 0, 0, { mode: BLEND_MULTIPLY }).mask(mask);
 
   if (options?.borderColor) {
-    const borderColors = []
-    if(typeof options.borderColor == 'string')
-      borderColors.push(options.borderColor)
-    else
-      borderColors.push(...options.borderColor)  
+    const borderColors = [];
+    if (typeof options.borderColor == 'string')
+      borderColors.push(options.borderColor);
+    else borderColors.push(...options.borderColor);
 
     if (borderColors.length > 2)
       throw new Error(
         `Discord Arts | Invalid borderColor length (${borderColors.length}) must be a maximum of 2 colors`
-      ); 
+      );
 
     const canvas = createCanvas(885, 303);
     const ctx = canvas.getContext('2d');
