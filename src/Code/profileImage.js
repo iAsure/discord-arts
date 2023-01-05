@@ -162,7 +162,7 @@ async function profileImage(user, options) {
     ctx.fillStyle = grd;
     ctx.fillRect(0, 0, 885, 303);
 
-    const borderBuffer = await read(canvas.toBuffer());
+    const borderBuffer = await read(canvas.toBuffer('image/png'));
     const borderMask = await read(Buffer.from(otherImgs.borderMask, 'base64'));
 
     borderBuffer.mask(borderMask);
