@@ -48,8 +48,8 @@ async function profileImage(user, options) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const userMedida = lengthString(userName, ctx, 'Helvetica', '80');
-  const userFix = fixString(userName, ctx, 'Helvetica', '80', pixelLength);
+  const userMedida = lengthString(userName, ctx, 'Helvetica', '60');
+  const userFix = fixString(userName, ctx, 'Helvetica', '60', pixelLength);
 
   const finalUser =
     userMedida > pixelLength ? userFix + '...' : userName ? userName : '?????';
@@ -58,14 +58,14 @@ async function profileImage(user, options) {
     ? isString(options.customTag, 'customTag')
     : `#${discriminator}`;
 
-  ctx.font = '80px Helvetica';
+  ctx.font = '60px Helvetica';
   ctx.textAlign = 'left';
   ctx.fillStyle = '#FFFFFF';
   ctx.fillText(finalUser, 300, 155);
 
   const userPxWidth = ctx.measureText(finalUser).width;
 
-  ctx.font = '60px Sans';
+  ctx.font = '40px Sans';
   ctx.fillStyle = '#c7c7c7';
   ctx.fillText(tag, 300, 215);
 
