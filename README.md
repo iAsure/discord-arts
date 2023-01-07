@@ -92,8 +92,8 @@ interaction.followUp({ files: [attachment] });
 >   overwriteBadges: false,
 >   usernameColor: '#d9dfef',
 >   borderColor: ['#f90257', '#043a92'],
->   presenceStatus: 'idle'
->   squareAvatar: true,
+>   presenceStatus: 'idle',
+>   squareAvatar: true
 > });
 > ```
 > ![Default](https://i.imgur.com/YCTJ3xe.png)
@@ -107,7 +107,7 @@ interaction.followUp({ files: [attachment] });
 >   usernameColor: '#ffbddf',
 >   borderColor: '#fe6a90',
 >   presenceStatus: 'online',
->   squareAvatar: true,
+>   squareAvatar: true
 > });
 > ```
 > ![Default](https://i.imgur.com/yRzIo2R.png)
