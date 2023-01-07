@@ -11,12 +11,13 @@ const {
   statusImgs,
 } = require('../../src/Images/profileImage.json');
 
+const badgesOrder = require('../Utils/badgesOrder.json');
 const { fixString, lengthString } = require('../Utils/fixString');
 const { parseImg, parsePng, parseHex, isString } = require('../Utils/checks');
 
 GlobalFonts.registerFromPath(
   `${path.join(__dirname, '..', 'Fonts')}/Helvetica.ttf`,
-  `Helvetica`,
+  `Helvetica`
 );
 
 async function profileImage(user, options) {
@@ -60,50 +61,55 @@ async function profileImage(user, options) {
 
   ctx.font = '80px Helvetica';
   ctx.textAlign = 'left';
-  ctx.fillStyle = '#FFFFFF';
+  ctx.fillStyle = options?.usernameColor
+    ? parseHex(options.usernameColor)
+    : '#FFFFFF';
   ctx.fillText(finalUser, 300, 155);
 
   const userPxWidth = ctx.measureText(finalUser).width;
 
   ctx.font = '60px Sans';
-  ctx.fillStyle = '#c7c7c7';
+  ctx.fillStyle = options?.tagColor ? parseHex(options.tagColor) : '#c7c7c7';
   ctx.fillText(tag, 300, 215);
 
   ctx.font = ' 23px Sans';
   ctx.textAlign = 'center';
+  ctx.fillStyle = '#c7c7c7';
   ctx.fillText(`${moment(+createdTimestamp).format('MMM DD, YYYY')}`, 775, 273);
 
-  const canvasJimp = await read(canvas.toBuffer('image/png'));
-  const base = await read(Buffer.from(otherImgs.UserBase, 'base64'));
-  const capa = await read(Buffer.from(otherImgs.UserProfile, 'base64'));
-  const mask = await read(Buffer.from(otherImgs.mask, 'base64'));
-  const mark = await read(Buffer.from(otherImgs.mark, 'base64'));
+  const cardText = await read(canvas.toBuffer('image/png'));
+  const cardBase = await read(Buffer.from(otherImgs.UserBase, 'base64'));
+  const cardEdit = await read(Buffer.from(otherImgs.UserProfile, 'base64'));
+  const cardMask = await read(Buffer.from(otherImgs.mask, 'base64'));
+  const cardFrame = await read(Buffer.from(otherImgs.mark, 'base64'));
+  const avSquareMask = await read(Buffer.from(otherImgs.squareMask, 'base64'));
+  const avCircleMask = await read(Buffer.from(otherImgs.circleMask, 'base64'));
 
   const newAvatarURL = avatarURL ? avatarURL + '?size=512' : defaultAvatarURL;
 
-  const avatarBackground = await read(
+  const cardBackground = await read(
     options?.customBackground
       ? parseImg(options.customBackground)
       : bannerURL
       ? bannerURL
       : newAvatarURL
   );
-  const avatarProfile = await read(newAvatarURL);
-  const avatarBlack = await read(Buffer.from(otherImgs.avatarBlack, 'base64'));
+  const cardAvatar = await read(newAvatarURL);
+  const avatarBackground = await read(Buffer.from(otherImgs.avatarBlack, 'base64'));
 
   const condAvatar = options?.customBackground ? true : bannerURL !== null;
   const avatarX = condAvatar ? 885 : 900;
   const avatarY = condAvatar ? 303 : AUTO;
   const avatarComp = condAvatar ? 0 : -345;
 
-  avatarBackground.resize(avatarX, avatarY).opaque().blur(4);
-  base.composite(avatarBackground, 0, avatarComp);
+  cardBackground.resize(avatarX, avatarY).opaque().blur(4);
+  cardBase.composite(cardBackground, 0, avatarComp);
 
-  canvasJimp.shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 });
-  capa.opacity(0.8);
-  base.composite(capa, 0, 0).composite(canvasJimp, 0, 0);
+  cardText.shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 });
+  cardEdit.opacity(0.8);
+  cardBase.composite(cardEdit, 0, 0).composite(cardText, 0, 0);
 
-  avatarProfile.resize(225, 225).circle();
+  cardAvatar.resize(225, 225);
 
   if (options?.presenceStatus) {
     const validStatus = ['idle', 'dnd', 'online', 'invisible'];
@@ -118,23 +124,25 @@ async function profileImage(user, options) {
     );
 
     status.shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 });
-    base.composite(status, 0, 0);
+    cardBase.composite(status, 0, 0);
   }
 
-  avatarBlack
-    .circle()
-    .shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 })
-    .composite(avatarProfile, 0, 0);
+  avatarBackground.composite(cardAvatar, 47, 39);
+
+  if (!options?.squareAvatar) avatarBackground.mask(avCircleMask);
+  else avatarBackground.mask(avSquareMask);
 
   if (options?.presenceStatus) {
     const maskStatus = await read(Buffer.from(statusImgs.mask, 'base64'));
-    avatarBlack.mask(maskStatus);
+    avatarBackground.mask(maskStatus, 47, 39);
   }
 
-  base.composite(avatarBlack, 47, 39);
+  avatarBackground.shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 });
 
-  mark.opacity(0.5);
-  base.composite(mark, 0, 0, { mode: BLEND_MULTIPLY }).mask(mask);
+  cardBase.composite(avatarBackground, 0, 0);
+
+  cardFrame.opacity(0.5);
+  cardBase.composite(cardFrame, 0, 0, { mode: BLEND_MULTIPLY }).mask(cardMask);
 
   if (options?.borderColor) {
     const borderColors = [];
@@ -167,17 +175,12 @@ async function profileImage(user, options) {
 
     borderBuffer.mask(borderMask);
 
-    base.composite(borderBuffer, 0, 0);
+    cardBase.composite(borderBuffer, 0, 0);
   }
 
   let badges = [],
     flagsUser = public_flags_array;
-  flagsUser = flagsUser.sort();
-
-  if (flagsUser.includes('NITRO'))
-    read(Buffer.from(otherBadges.NITRO, 'base64')).then((b) =>
-      badges.push({ jimp: b, x: 0, y: 15 })
-    );
+  flagsUser = flagsUser.sort((a, b) => badgesOrder[b] - badgesOrder[a]);
 
   let botBagde;
 
@@ -188,8 +191,14 @@ async function profileImage(user, options) {
           Buffer.from(nitroBadges[flagsUser[i]], 'base64')
         );
         badges.push({ jimp: badge, x: 0, y: 15 });
+      } else if (flagsUser[i].startsWith('NITRO')) {
+        let badge = await read(
+          Buffer.from(otherBadges[flagsUser[i]], 'base64')
+        );
+        badges.push({ jimp: badge, x: 0, y: 15 });
       } else {
         if (flagsUser[i].startsWith('NITRO')) continue;
+
         let badge = await read(
           Buffer.from(otherBadges[flagsUser[i]], 'base64')
         );
@@ -211,7 +220,7 @@ async function profileImage(user, options) {
       badge.jimp
         .shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 })
         .opacity(0.9);
-      base.composite(badge.jimp, x + badge.x, badge.y);
+      cardBase.composite(badge.jimp, x + badge.x, badge.y);
       x -= 60;
     });
   } else {
@@ -245,13 +254,13 @@ async function profileImage(user, options) {
       slashBadge
         .shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 })
         .opacity(0.9);
-      base.composite(slashBadge, 800, 15);
+      cardBase.composite(slashBadge, 800, 15);
     }
 
-    base.composite(botBagde, userPxWidth + 310, 110);
+    cardBase.composite(botBagde, userPxWidth + 310, 110);
   }
 
-  const buffer = await base.getBufferAsync(MIME_PNG);
+  const buffer = await cardBase.getBufferAsync(MIME_PNG);
 
   return buffer;
 }

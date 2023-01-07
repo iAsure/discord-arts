@@ -6,9 +6,12 @@ interface profileOptions {
     customBadges?: string[];
     customBackground?: string;
     overwriteBadges?: boolean;
+    usernameColor?: string;
+    tagColor?: string;
     borderColor?: string | string[];
     borderAllign?: borderAllign;
     presenceStatus?: presenceStatus;
+    squareAvatar?: boolean;
 }
 
 declare module 'discord-arts' {

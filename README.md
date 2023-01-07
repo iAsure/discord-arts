@@ -34,9 +34,12 @@ customTag| `string` | `✖️` | Text below the user
 customBadges| `string[]` | `✖️` | Your own png badges `path and URL`
 customBackground| `string` | `✖️` | Change the background to any image `path and URL`
 overwriteBadges| `boolean` | `false` | Merge your badges with the discord defaults
-borderColor| `string or string[]` | `✖️` | Hex color of the border, can be gradient if 2 colors are used
+usernameColor| `string` | `✖️` | Username HEX color
+tagColor| `string` | `✖️` | Tag HEX color
+borderColor| `string or string[]` | `✖️` | Border HEX color, can be gradient if 2 colors are used
 borderAllign| `string` | `horizontal` | Gradient alignment if 2 colors are used
 presenceStatus| `string` | `✖️` | User status to be displayed below the avatar
+squareAvatar| `boolean` | `false` | Change avatar shape to a square
 
 #### Returns: **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<**[Buffer](https://nodejs.org/api/buffer.html)**>**
 
@@ -59,12 +62,12 @@ interaction.followUp({ files: [attachment] });
 
 ***
 
-### 🖼️Results 
+### 🖼️Example Results 
 
 > ```javascript
 > profileImage('ID')
 > ```
-> ![Default](https://i.imgur.com/HKumM3y.png)
+> ![Default](https://i.imgur.com/Iu5E2Kf.png)
 
 ***
 
@@ -72,13 +75,13 @@ interaction.followUp({ files: [attachment] });
 > profileImage('ID', {
 > 	customTag: 'Programmer',
 > 	customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
-> 	customBackground: 'https://i.imgur.com/DGA63O0.jpg',
+> 	customBackground: 'https://i.imgur.com/Zm06vsb.png',
 > 	overwriteBadges: true,
-> 	borderColor: ['#841821', '#005b58'],
+> 	borderColor: ['#841821', '#015b58'],
 > 	presenceStatus: 'dnd'
 > });
 > ```
-> ![Default](https://i.imgur.com/qkT2DRk.png)
+> ![Default](https://i.imgur.com/14AuGJ7.png)
 
 ***
 
@@ -87,11 +90,13 @@ interaction.followUp({ files: [attachment] });
 > 	customTag: 'Minecraft Modder',
 > 	customBadges: [ './badges/booster.png','./badges/orange.png', './badges/giveaway.png' ],
 > 	overwriteBadges: false,
+>   usernameColor: '#d9dfef',
 > 	borderColor: ['#f90257', '#043a92'],
 > 	presenceStatus: 'idle'
+>   squareAvatar: true,
 > });
 > ```
-> ![Default](https://i.imgur.com/Tz4IgNH.png)
+> ![Default](https://i.imgur.com/YCTJ3xe.png)
 
 ***
 
@@ -99,11 +104,13 @@ interaction.followUp({ files: [attachment] });
 > profileImage('ID', {
 > 	customTag: 'Minecraft Bot',
 > 	customBackground: './imgs/axoBackground.png',
-> 	borderColor: '#fe6a90',
+>   usernameColor: '#ffbddf',
+>   borderColor: '#fe6a90',
 > 	presenceStatus: 'online'
+>   squareAvatar: true,
 > });
 > ```
-> ![Default](https://i.imgur.com/W8PVvOY.png)
+> ![Default](https://i.imgur.com/yRzIo2R.png)
 
 ***
 
