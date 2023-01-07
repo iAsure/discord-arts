@@ -73,12 +73,12 @@ interaction.followUp({ files: [attachment] });
 
 > ```javascript
 > profileImage('ID', {
-> 	customTag: 'Programmer',
-> 	customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
-> 	customBackground: 'https://i.imgur.com/Zm06vsb.png',
-> 	overwriteBadges: true,
-> 	borderColor: ['#841821', '#015b58'],
-> 	presenceStatus: 'dnd'
+>   customTag: 'Programmer',
+>   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
+>   customBackground: 'https://i.imgur.com/Zm06vsb.png',
+>   overwriteBadges: true,
+>   borderColor: ['#841821', '#015b58'],
+>   presenceStatus: 'dnd'
 > });
 > ```
 > ![Default](https://i.imgur.com/14AuGJ7.png)
@@ -87,12 +87,12 @@ interaction.followUp({ files: [attachment] });
 
 > ```javascript
 > profileImage('ID', {
-> 	customTag: 'Minecraft Modder',
-> 	customBadges: [ './badges/booster.png','./badges/orange.png', './badges/giveaway.png' ],
-> 	overwriteBadges: false,
+>   customTag: 'Minecraft Modder',
+>   customBadges: [ './badges/booster.png','./badges/orange.png', './badges/giveaway.png' ],
+>   overwriteBadges: false,
 >   usernameColor: '#d9dfef',
-> 	borderColor: ['#f90257', '#043a92'],
-> 	presenceStatus: 'idle'
+>   borderColor: ['#f90257', '#043a92'],
+>   presenceStatus: 'idle'
 >   squareAvatar: true,
 > });
 > ```
@@ -102,11 +102,11 @@ interaction.followUp({ files: [attachment] });
 
 > ```javascript
 > profileImage('ID', {
-> 	customTag: 'Minecraft Bot',
-> 	customBackground: './imgs/axoBackground.png',
+>   customTag: 'Minecraft Bot',
+>   customBackground: './imgs/axoBackground.png',
 >   usernameColor: '#ffbddf',
 >   borderColor: '#fe6a90',
-> 	presenceStatus: 'online'
+>   presenceStatus: 'online',
 >   squareAvatar: true,
 > });
 > ```
