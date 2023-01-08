@@ -16,6 +16,10 @@ const { parseUsername, addBadges } = require('../Utils/imageUtils');
 const { parseImg, parseHex, isString } = require('../Utils/parseData');
 
 GlobalFonts.registerFromPath(
+  `${path.join(__dirname, '..', 'Fonts')}/HelveticaBold.ttf`,
+  `Helvetica Bold`
+);
+GlobalFonts.registerFromPath(
   `${path.join(__dirname, '..', 'Fonts')}/Helvetica.ttf`,
   `Helvetica`
 );
@@ -47,24 +51,24 @@ async function profileImage(user, options) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const { username, newSize, textLength } = parseUsername(rawUsername, ctx, 'Helvetica', '80', pixelLength);
+  const { username, newSize, textLength } = parseUsername(rawUsername, ctx, 'Helvetica Bold', '80', pixelLength);
 
   const tag = options?.customTag
     ? isString(options.customTag, 'customTag')
     : `#${discriminator}`;
 
-  ctx.font = `${newSize}px Helvetica`;
+  ctx.font = `${newSize}px Helvetica Bold`;
   ctx.textAlign = 'left';
   ctx.fillStyle = options?.usernameColor
     ? parseHex(options.usernameColor)
     : '#FFFFFF';
   ctx.fillText(username, 300, 155);
 
-  ctx.font = '60px Sans';
+  ctx.font = '60px Helvetica';
   ctx.fillStyle = options?.tagColor ? parseHex(options.tagColor) : '#c7c7c7';
   ctx.fillText(tag, 300, 215);
 
-  ctx.font = ' 23px Sans';
+  ctx.font = ' 23px Helvetica';
   ctx.textAlign = 'center';
   ctx.fillStyle = '#c7c7c7';
   ctx.fillText(`${moment(+createdTimestamp).format('MMM DD, YYYY')}`, 775, 273);
