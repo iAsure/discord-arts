@@ -1,23 +1,27 @@
 function parseImg(imgString) {
-  if(!imgString) return false
+  if(!imgString || typeof imgString !== 'string') {
+    throw new Error(`Discord Arts | Invalid custom badge (${imgString || undefined}) must be an image file 'png | jpg | gif'`);
+  }
   const URL = imgString.split('.')
   const imgType = URL[URL.length - 1]
   const imgCheck = /(jpg|png|gif)/gi.test(imgType)
 
   if(!imgCheck)
-    throw new Error(`Discord Arts | Invalid customBackground (${imgString}) must be an image file 'png | jpg | gif'`);
+    throw new Error(`Discord Arts | Invalid customBackground (${imgString || undefined}) must be an image file 'png | jpg | gif'`);
 
   return imgString
 }
 
 function parsePng(imgString) {
-  if(!imgString) return false
+  if(!imgString || typeof imgString !== 'string') {
+    throw new Error(`Discord Arts | Invalid custom badge (${imgString || undefined}) must be a png file`);
+  }
   const URL = imgString.split('.')
   const imgType = URL[URL.length - 1]
   const imgCheck = /(png)/gi.test(imgType)
 
   if(!imgCheck)
-    throw new Error(`Discord Arts | Invalid custom badge (${imgString}) must be a png file`);
+    throw new Error(`Discord Arts | Invalid custom badge (${imgString || undefined}) must be a png file`);
 
   return imgString
 }
@@ -26,7 +30,7 @@ function parseHex(hexString){
   const hexRegex = new RegExp(/[a-fA-F0-9]{6}|#[a-fA-F0-9]{6}|[a-fA-F0-9]{3}|#[a-fA-F0-9]{3}/)
 
   if(!hexRegex.test(hexString))
-    throw new Error(`Discord Arts | Invalid Hex Code (${hexString})`);
+    throw new Error(`Discord Arts | Invalid Hex Code (${hexString || undefined})`);
   
   if(!hexString.includes('#') && !hexString.startsWith('#'))
     hexString = '#'+hexString
@@ -36,7 +40,7 @@ function parseHex(hexString){
 
 function isString(param, type){
   if(typeof param !== 'string')
-    throw new Error(`Discord Arts | Invalid ${type}, must be a string`);
+    throw new Error(`Discord Arts | Invalid ${type} (${param || undefined}), must be a string`);
 
   return param
 }

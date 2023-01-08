@@ -12,8 +12,8 @@ const {
 } = require('../../src/Images/profileImage.json');
 
 const badgesOrder = require('../Utils/badgesOrder.json');
-const { fixString, lengthString } = require('../Utils/fixString');
-const { parseImg, parsePng, parseHex, isString } = require('../Utils/checks');
+const { parseUsername, addBadges } = require('../Utils/imageUtils');
+const { parseImg, parseHex, isString } = require('../Utils/parseData');
 
 GlobalFonts.registerFromPath(
   `${path.join(__dirname, '..', 'Fonts')}/Helvetica.ttf`,
@@ -44,29 +44,23 @@ async function profileImage(user, options) {
 
   let userName = username.replace(/[^\u0000-\u04FF]+/gm, '');
 
-  const pixelLength = bot ? 420 : 515;
+  const pixelLength = bot ? 450 : 555;
 
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const userMedida = lengthString(userName, ctx, 'Helvetica', '80');
-  const userFix = fixString(userName, ctx, 'Helvetica', '80', pixelLength);
-
-  const finalUser =
-    userMedida > pixelLength ? userFix + '...' : userName ? userName : '?????';
+  const { username: finalUser, newSize, textLength } = parseUsername(userName, ctx, 'Helvetica', '80', pixelLength);
 
   const tag = options?.customTag
     ? isString(options.customTag, 'customTag')
     : `#${discriminator}`;
 
-  ctx.font = '80px Helvetica';
+  ctx.font = `${newSize}px Helvetica`;
   ctx.textAlign = 'left';
   ctx.fillStyle = options?.usernameColor
     ? parseHex(options.usernameColor)
     : '#FFFFFF';
   ctx.fillText(finalUser, 300, 155);
-
-  const userPxWidth = ctx.measureText(finalUser).width;
 
   ctx.font = '60px Sans';
   ctx.fillStyle = options?.tagColor ? parseHex(options.tagColor) : '#c7c7c7';
@@ -205,14 +199,14 @@ async function profileImage(user, options) {
         badges.push({ jimp: badge, x: 0, y: 15 });
       }
     }
+  
+    if (options?.customBadges?.length) {
+      if (options?.overwriteBadges) {
+        badges = [];
+      };
 
-    badges =
-      options?.customBadges?.length && options?.overwriteBadges ? [] : badges;
-
-    for (let i = 0; i < options?.customBadges?.length; i++) {
-      const badgeJimp = await read(parsePng(options.customBadges[i]));
-      badgeJimp.resize(46, 46);
-      badges.push({ jimp: badgeJimp, x: 10, y: 23 });
+      const newBadges = await addBadges(options.customBadges, read)
+      badges.push(...newBadges)
     }
 
     let x = 800;
@@ -251,13 +245,28 @@ async function profileImage(user, options) {
       const slashBadge = await read(
         Buffer.from(otherBadges.SLASHBOT, 'base64')
       );
-      slashBadge
-        .shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 })
-        .opacity(0.9);
-      cardBase.composite(slashBadge, 800, 15);
+      badges.push({ jimp: slashBadge, x: 0, y: 15 });
     }
 
-    cardBase.composite(botBagde, userPxWidth + 310, 110);
+    if (options?.customBadges?.length) {
+      if (options?.overwriteBadges) {
+        badges = [];
+      };
+
+      const newBadges = await addBadges(options.customBadges, read)
+      badges.push(...newBadges)
+    }
+
+    let x = 800;
+    badges.forEach((badge) => {
+      badge.jimp
+        .shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 })
+        .opacity(0.9);
+      cardBase.composite(badge.jimp, x + badge.x, badge.y);
+      x -= 60;
+    });
+
+    cardBase.composite(botBagde, textLength + 310, 110);
   }
 
   const buffer = await cardBase.getBufferAsync(MIME_PNG);

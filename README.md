@@ -11,7 +11,7 @@
 </div>
 
 <p align="center">
-  <strong>Image generation tools for Discord.JS v13 and v14</strong>
+  <strong>Image generation tools for Discord.JS / Node.JS</strong>
 </p>
 
 ***
@@ -24,8 +24,8 @@
 
 PARAMETER | TYPE | REQUIRED | DESCRIPTION 
 -------- | --------- | -------- | -------- 
-userId| `string` | `✔️✔️✔️` | Discord User ID
-imgOptions| `object` | `✖️✖️✖️` | Customize the card in multiple ways
+userId| `string` | `✔️` | Discord User ID
+imgOptions| `object` | `✖️` | Customize the card in multiple ways
 
 ### imgOptions `🔴NEW!!`
 PARAMETER | TYPE | DEFAULT | DESCRIPTION 
@@ -52,11 +52,14 @@ const { AttachmentBuilder } = require('discord.js');
 const { profileImage } = require('discord-arts');
 
 await interaction.deferReply();
-
 const user = interaction.options.getUser('user-option');
-const buffer = await profileImage(user.id); // <<<<<<
-const attachment = new AttachmentBuilder(buffer, { name: 'profile.png' });
 
+const buffer = await profileImage(user.id, {
+  customTag: 'Admin',
+  ...imgOptions
+});
+
+const attachment = new AttachmentBuilder(buffer, { name: 'profile.png' });
 interaction.followUp({ files: [attachment] });
 ```
 
