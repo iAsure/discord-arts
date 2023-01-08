@@ -32,7 +32,7 @@ async function profileImage(user, options) {
   const userData = await fetch(`https://japi.rest/discord/v1/user/${user}`);
   const { data } = await userData.json();
   const {
-    username,
+    username: rawUsername,
     discriminator,
     bot,
     createdTimestamp,
@@ -42,14 +42,12 @@ async function profileImage(user, options) {
     public_flags_array,
   } = data;
 
-  let userName = username.replace(/[^\u0000-\u04FF]+/gm, '');
-
   const pixelLength = bot ? 450 : 555;
 
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const { username: finalUser, newSize, textLength } = parseUsername(userName, ctx, 'Helvetica', '80', pixelLength);
+  const { username, newSize, textLength } = parseUsername(rawUsername, ctx, 'Helvetica', '80', pixelLength);
 
   const tag = options?.customTag
     ? isString(options.customTag, 'customTag')
@@ -60,7 +58,7 @@ async function profileImage(user, options) {
   ctx.fillStyle = options?.usernameColor
     ? parseHex(options.usernameColor)
     : '#FFFFFF';
-  ctx.fillText(finalUser, 300, 155);
+  ctx.fillText(username, 300, 155);
 
   ctx.font = '60px Sans';
   ctx.fillStyle = options?.tagColor ? parseHex(options.tagColor) : '#c7c7c7';

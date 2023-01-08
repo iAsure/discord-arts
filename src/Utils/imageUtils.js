@@ -32,7 +32,7 @@ function parseUsername(username, ctx, font, size, maxLength) {
   }
 
   return {
-    username: textLength > maxLength ? finalUsername + '...' : finalUsername || '?????',
+    username: textLength > maxLength ? finalUsername + '...' : finalUsername.replace(/\s/g, '') ? finalUsername : '?????',
     newSize,
     textLength,
   };
