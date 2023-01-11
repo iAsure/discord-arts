@@ -115,7 +115,7 @@ interaction.followUp({ files: [attachment] });
 
 ***
 
-## Square Avatar and Custom Badges
+## Custom User Card
 
 > ![Default](https://i.imgur.com/qfVR5hp.png)
 >> ```javascript
