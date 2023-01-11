@@ -11,7 +11,7 @@
 </div>
 
 <p align="center">
-  <strong>Image generation tools for Discord.JS / Node.JS</strong>
+  <strong>- Customized cards with Discord style -</strong>
 </p>
 
 ***
