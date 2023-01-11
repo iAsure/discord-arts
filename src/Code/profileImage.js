@@ -209,7 +209,10 @@ async function genTextAndAvatar(data, options) {
     pixelLength
   );
 
-  const createdDateString = new Date(+createdTimestamp).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' })
+  const createdDateString = new Date(+createdTimestamp).toLocaleDateString(
+    'en',
+    { month: 'short', day: 'numeric', year: 'numeric' }
+  );
 
   const tag = options?.customTag
     ? isString(options.customTag, 'customTag')
