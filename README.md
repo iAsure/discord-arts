@@ -86,7 +86,7 @@ interaction.followUp({ files: [attachment] });
 
 ## Default Card
 
-> ![Default](https://i.imgur.com/Iu5E2Kf.png)
+> ![Default](https://i.imgur.com/xV77f9g.png)
 >> ```javascript
 >> profileImage('ID')
 >> ```
