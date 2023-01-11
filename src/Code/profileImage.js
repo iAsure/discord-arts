@@ -1,7 +1,5 @@
-const { read, AUTO, MIME_PNG, BLEND_MULTIPLY } = require('jimp');
-const { createCanvas, GlobalFonts } = require('@napi-rs/canvas');
+const { createCanvas, loadImage, GlobalFonts } = require('@napi-rs/canvas');
 const fetch = require('node-fetch');
-const moment = require('moment');
 const path = require('path');
 
 const {
@@ -12,8 +10,14 @@ const {
 } = require('../../src/Images/profileImage.json');
 
 const badgesOrder = require('../Utils/badgesOrder.json');
-const { parseUsername, addBadges } = require('../Utils/imageUtils');
-const { parseImg, parseHex, isString } = require('../Utils/parseData');
+const { parseUsername } = require('../Utils/imageUtils');
+const {
+  parseImg,
+  parseHex,
+  parsePng,
+  isString,
+  isNumber
+} = require('../Utils/parseData');
 
 GlobalFonts.registerFromPath(
   `${path.join(__dirname, '..', 'Fonts')}/HelveticaBold.ttf`,
@@ -23,6 +27,8 @@ GlobalFonts.registerFromPath(
   `${path.join(__dirname, '..', 'Fonts')}/Helvetica.ttf`,
   `Helvetica`
 );
+
+const alphaValue = 0.4;
 
 async function profileImage(user, options) {
   if (!user || typeof user !== 'string')
@@ -35,6 +41,152 @@ async function profileImage(user, options) {
 
   const userData = await fetch(`https://japi.rest/discord/v1/user/${user}`);
   const { data } = await userData.json();
+
+  const canvas = createCanvas(885, 303);
+  const ctx = canvas.getContext('2d');
+
+  ctx.roundRect(0, 0, 885, 303, [34]);
+  ctx.clip()
+
+  const cardBase = await genBase(data, options);
+  ctx.drawImage(cardBase, 0, 0);
+
+  const cardFrame = await genFrame(data, options);
+  ctx.drawImage(cardFrame, 0, 0);
+
+  const cardTextAndAvatar = await genTextAndAvatar(data, options);
+  const textAvatarShadow = addShadow(cardTextAndAvatar);
+  ctx.drawImage(textAvatarShadow, 0, 0);
+  ctx.drawImage(cardTextAndAvatar, 0, 0);
+
+  if (options?.borderColor) {
+    const border = await genBorder(options);
+    ctx.drawImage(border, 0, 0);
+  }
+
+  const cardBadges = await genBadges(data, options);
+  const badgesShadow = addShadow(cardBadges);
+  ctx.drawImage(badgesShadow, 0, 0);
+  ctx.drawImage(cardBadges, 0, 0);
+
+  if (options?.rankData){
+    const xpBar = genXpBar(options);
+    ctx.drawImage(xpBar, 0, 0);
+  }
+
+  return canvas.toBuffer('image/png');
+}
+
+module.exports = profileImage;
+
+async function genBase(data, options) {
+  const { bannerURL, avatarURL, defaultAvatarURL } = data;
+
+  const canvas = createCanvas(885, 303);
+  const ctx = canvas.getContext('2d');
+
+  const newAvatarURL = avatarURL ? avatarURL + '?size=512' : defaultAvatarURL;
+
+  const cardBackground = await loadImage(
+    options?.customBackground
+      ? parseImg(options.customBackground)
+      : bannerURL ?? newAvatarURL
+  );
+
+  const condAvatar = options?.customBackground ? true : bannerURL !== null;
+  const wX = condAvatar ? 885 : 900;
+  const wY = condAvatar ? 303 : wX;
+  const cY = condAvatar ? 0 : -345;
+
+  ctx.fillStyle = '#18191c'
+  ctx.beginPath();
+  ctx.fillRect(0, 0, 885, 303);
+  ctx.fill()
+
+  ctx.filter = 'blur(3px)';
+  ctx.drawImage(cardBackground, 0, cY, wX, wY);
+
+  ctx.globalAlpha = 0.2;
+  ctx.fillStyle = '#2a2d33'
+  ctx.beginPath();
+  ctx.fillRect(0, 0, 885, 303);
+  ctx.fill()
+
+  return canvas;
+}
+
+async function genFrame(data, options) {
+  const canvas = createCanvas(885, 303);
+  const ctx = canvas.getContext('2d');
+
+  const cardFrame = await loadImage(Buffer.from(otherImgs.frame, 'base64'));
+
+  ctx.globalCompositeOperation = 'source-out';
+  ctx.globalAlpha = 0.5;
+  ctx.drawImage(cardFrame, 0, 0, 885, 303);
+  ctx.globalCompositeOperation = 'source-over';
+
+  ctx.globalAlpha = alphaValue;
+  ctx.fillStyle = '#000'
+  ctx.beginPath();
+  ctx.roundRect(696, 248, 165, 33, [12]);
+  ctx.fill()
+  ctx.globalAlpha = 1;
+
+  const badgesLength =
+      (options?.overwriteBadges && options?.customBadges?.length
+        ? 0
+        : data.public_flags_array.length) +
+      (options?.customBadges?.length ? options?.customBadges?.length : 0);
+
+  if(options?.badgesFrame && badgesLength > 0){
+    ctx.fillStyle = '#000'
+    ctx.globalAlpha = alphaValue;
+    ctx.beginPath();
+    ctx.roundRect(800-60*(badgesLength-1)-3, 15, (60*badgesLength)+8, 60, [17]);
+    ctx.fill()
+  }
+
+  return canvas;
+}
+
+async function genBorder(options) {
+  const canvas = createCanvas(885, 303);
+  const ctx = canvas.getContext('2d');
+
+  const borderColors = [];
+  if (typeof options.borderColor == 'string')
+    borderColors.push(options.borderColor);
+  else borderColors.push(...options.borderColor);
+
+  if (borderColors.length > 2)
+    throw new Error(
+      `Discord Arts | Invalid borderColor length (${borderColors.length}) must be a maximum of 2 colors`
+    );
+
+  const gradX = options.borderAllign == 'vertical' ? 0 : 885;
+  const gradY = options.borderAllign == 'vertical' ? 303 : 0;
+
+  const grd = ctx.createLinearGradient(0, 0, gradX, gradY);
+
+  for (let i = 0; i < borderColors.length; i++) {
+    grd.addColorStop(i, parseHex(borderColors[i]));
+  }
+
+  ctx.fillStyle = grd;
+  ctx.beginPath();
+  ctx.fillRect(0, 0, 885, 303);
+
+  ctx.globalCompositeOperation = 'destination-out';
+
+  ctx.beginPath();
+  ctx.roundRect(9, 9, 885-18, 303-18, [25])
+  ctx.fill()
+
+  return canvas;
+}
+
+async function genTextAndAvatar(data, options) {
   const {
     username: rawUsername,
     discriminator,
@@ -42,16 +194,22 @@ async function profileImage(user, options) {
     createdTimestamp,
     avatarURL,
     defaultAvatarURL,
-    bannerURL,
-    public_flags_array,
   } = data;
 
-  const pixelLength = bot ? 450 : 555;
+  const pixelLength = bot ? 470 : 555;
 
-  const canvas = createCanvas(885, 303);
+  let canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const { username, newSize, textLength } = parseUsername(rawUsername, ctx, 'Helvetica Bold', '80', pixelLength);
+  const { username, newSize } = parseUsername(
+    rawUsername,
+    ctx,
+    'Helvetica Bold',
+    '80',
+    pixelLength
+  );
+
+  const createdDateString = new Date(+createdTimestamp).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' })
 
   const tag = options?.customTag
     ? isString(options.customTag, 'customTag')
@@ -64,164 +222,97 @@ async function profileImage(user, options) {
     : '#FFFFFF';
   ctx.fillText(username, 300, 155);
 
-  ctx.font = '60px Helvetica';
-  ctx.fillStyle = options?.tagColor ? parseHex(options.tagColor) : '#c7c7c7';
-  ctx.fillText(tag, 300, 215);
+  if(!options?.rankData){
+    ctx.font = '60px Helvetica';
+    ctx.fillStyle = options?.tagColor ? parseHex(options.tagColor) : '#dadada';
+    ctx.fillText(tag, 300, 215);
+  }
 
-  ctx.font = ' 23px Helvetica';
+  ctx.font = '23px Helvetica';
   ctx.textAlign = 'center';
-  ctx.fillStyle = '#c7c7c7';
-  ctx.fillText(`${moment(+createdTimestamp).format('MMM DD, YYYY')}`, 775, 273);
-
-  const cardText = await read(canvas.toBuffer('image/png'));
-  const cardBase = await read(Buffer.from(otherImgs.UserBase, 'base64'));
-  const cardEdit = await read(Buffer.from(otherImgs.UserProfile, 'base64'));
-  const cardMask = await read(Buffer.from(otherImgs.mask, 'base64'));
-  const cardFrame = await read(Buffer.from(otherImgs.mark, 'base64'));
-  const avSquareMask = await read(Buffer.from(otherImgs.squareMask, 'base64'));
-  const avCircleMask = await read(Buffer.from(otherImgs.circleMask, 'base64'));
+  ctx.fillStyle = '#dadada';
+  ctx.fillText(createdDateString, 775, 273);
 
   const newAvatarURL = avatarURL ? avatarURL + '?size=512' : defaultAvatarURL;
 
-  const cardBackground = await read(
-    options?.customBackground
-      ? parseImg(options.customBackground)
-      : bannerURL
-      ? bannerURL
-      : newAvatarURL
-  );
-  const cardAvatar = await read(newAvatarURL);
-  const avatarBackground = await read(Buffer.from(otherImgs.avatarBlack, 'base64'));
+  const cardAvatar = await loadImage(newAvatarURL);
 
-  const condAvatar = options?.customBackground ? true : bannerURL !== null;
-  const avatarX = condAvatar ? 885 : 900;
-  const avatarY = condAvatar ? 303 : AUTO;
-  const avatarComp = condAvatar ? 0 : -345;
+  const roundValue = options?.squareAvatar ? 30 : 225;
+  
+  ctx.beginPath();
+  ctx.roundRect(47, 39, 225, 225, [roundValue]);
+  ctx.clip();
 
-  cardBackground.resize(avatarX, avatarY).opaque().blur(4);
-  cardBase.composite(cardBackground, 0, avatarComp);
+  ctx.fillStyle = '#292b2f'
+  ctx.beginPath();
+  ctx.roundRect(47, 39, 225, 225, [roundValue]);
+  ctx.fill();
 
-  cardText.shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 });
-  cardEdit.opacity(0.8);
-  cardBase.composite(cardEdit, 0, 0).composite(cardText, 0, 0);
+  ctx.drawImage(cardAvatar, 47, 39, 225, 225);
 
-  cardAvatar.resize(225, 225);
+  ctx.closePath();
 
   if (options?.presenceStatus) {
-    const validStatus = ['idle', 'dnd', 'online', 'invisible'];
+    canvas = await genStatus(canvas, options);
+  }
 
-    if (!validStatus.includes(options.presenceStatus))
-      throw new Error(
-        `Discord Arts | Invalid presenceStatus (${options.presenceStatus}) must be 'idle | dnd | online | invisible'`
-      );
+  return canvas;
+}
 
-    const status = await read(
-      Buffer.from(statusImgs[options.presenceStatus], 'base64')
+async function genStatus(canvasToEdit, options) {
+  const canvas = createCanvas(885, 303);
+  const ctx = canvas.getContext('2d');
+
+  const validStatus = ['idle', 'dnd', 'online', 'invisible'];
+
+  if (!validStatus.includes(options.presenceStatus))
+    throw new Error(
+      `Discord Arts | Invalid presenceStatus (${options.presenceStatus}) must be 'idle | dnd | online | invisible'`
     );
 
-    status.shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 });
-    cardBase.composite(status, 0, 0);
-  }
+  const status = await loadImage(
+    Buffer.from(statusImgs[options.presenceStatus], 'base64')
+  );
 
-  avatarBackground.composite(cardAvatar, 47, 39);
+  ctx.drawImage(canvasToEdit, 0, 0);
 
-  if (!options?.squareAvatar) avatarBackground.mask(avCircleMask);
-  else avatarBackground.mask(avSquareMask);
+  ctx.globalCompositeOperation = 'destination-out';
 
-  if (options?.presenceStatus) {
-    const maskStatus = await read(Buffer.from(statusImgs.mask, 'base64'));
-    avatarBackground.mask(maskStatus, 47, 39);
-  }
+  ctx.roundRect(212, 204, 62, 62, [62])
+  ctx.fill()
 
-  avatarBackground.shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 });
+  ctx.globalCompositeOperation = 'source-over';
 
-  cardBase.composite(avatarBackground, 0, 0);
+  ctx.drawImage(status, 0, 0);
 
-  cardFrame.opacity(0.5);
-  cardBase.composite(cardFrame, 0, 0, { mode: BLEND_MULTIPLY }).mask(cardMask);
+  return canvas;
+}
 
-  if (options?.borderColor) {
-    const borderColors = [];
-    if (typeof options.borderColor == 'string')
-      borderColors.push(options.borderColor);
-    else borderColors.push(...options.borderColor);
+async function genBadges(data, options) {
+  const { public_flags_array, bot, username: rawUsername, id } = data;
 
-    if (borderColors.length > 2)
-      throw new Error(
-        `Discord Arts | Invalid borderColor length (${borderColors.length}) must be a maximum of 2 colors`
-      );
+  const canvas = createCanvas(885, 303);
+  const ctx = canvas.getContext('2d');
 
-    const canvas = createCanvas(885, 303);
-    const ctx = canvas.getContext('2d');
+  const pixelLength = bot ? 470 : 555;
 
-    const gradX = options.borderAllign == 'vertical' ? 0 : 885;
-    const gradY = options.borderAllign == 'vertical' ? 303 : 0;
-
-    const grd = ctx.createLinearGradient(0, 0, gradX, gradY);
-
-    for (let i = 0; i < borderColors.length; i++) {
-      grd.addColorStop(i, parseHex(borderColors[i]));
-    }
-
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, 885, 303);
-
-    const borderBuffer = await read(canvas.toBuffer('image/png'));
-    const borderMask = await read(Buffer.from(otherImgs.borderMask, 'base64'));
-
-    borderBuffer.mask(borderMask);
-
-    cardBase.composite(borderBuffer, 0, 0);
-  }
+  const { textLength } = parseUsername(
+    rawUsername,
+    ctx,
+    'Helvetica Bold',
+    '80',
+    pixelLength
+  );
 
   let badges = [],
-    flagsUser = public_flags_array;
-  flagsUser = flagsUser.sort((a, b) => badgesOrder[b] - badgesOrder[a]);
-
+    flagsUser = public_flags_array.sort(
+      (a, b) => badgesOrder[b] - badgesOrder[a]
+    );
   let botBagde;
 
-  if (!bot) {
-    for (let i = 0; i < flagsUser.length; i++) {
-      if (flagsUser[i].startsWith('BOOSTER')) {
-        let badge = await read(
-          Buffer.from(nitroBadges[flagsUser[i]], 'base64')
-        );
-        badges.push({ jimp: badge, x: 0, y: 15 });
-      } else if (flagsUser[i].startsWith('NITRO')) {
-        let badge = await read(
-          Buffer.from(otherBadges[flagsUser[i]], 'base64')
-        );
-        badges.push({ jimp: badge, x: 0, y: 15 });
-      } else {
-        if (flagsUser[i].startsWith('NITRO')) continue;
-
-        let badge = await read(
-          Buffer.from(otherBadges[flagsUser[i]], 'base64')
-        );
-        badges.push({ jimp: badge, x: 0, y: 15 });
-      }
-    }
-  
-    if (options?.customBadges?.length) {
-      if (options?.overwriteBadges) {
-        badges = [];
-      };
-
-      const newBadges = await addBadges(options.customBadges, read)
-      badges.push(...newBadges)
-    }
-
-    let x = 800;
-    badges.forEach((badge) => {
-      badge.jimp
-        .shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 })
-        .opacity(0.9);
-      cardBase.composite(badge.jimp, x + badge.x, badge.y);
-      x -= 60;
-    });
-  } else {
+  if (bot) {
     const botFetch = await fetch(
-      `https://discord.com/api/v10/applications/${user}/rpc`
+      `https://discord.com/api/v10/applications/${id}/rpc`
     );
 
     const json = await botFetch.json();
@@ -237,43 +328,123 @@ async function profileImage(user, options) {
       if ((flagsBot & bit) === bit) arrayFlags.push(i);
     }
 
-    if (flagsUser.includes('VERIFIED_BOT')) {
-      botBagde = await read(Buffer.from(otherImgs.botVerif, 'base64'));
-    } else {
-      botBagde = await read(Buffer.from(otherImgs.botNoVerif, 'base64'));
-    }
+    const botVerifBadge =
+      otherImgs[flagsUser.includes('VERIFIED_BOT') ? 'botVerif' : 'botNoVerif'];
+    botBagde = await loadImage(Buffer.from(botVerifBadge, 'base64'));
 
     if (arrayFlags.includes('APPLICATION_COMMAND_BADGE')) {
-      const slashBadge = await read(
+      const slashBadge = await loadImage(
         Buffer.from(otherBadges.SLASHBOT, 'base64')
       );
-      badges.push({ jimp: slashBadge, x: 0, y: 15 });
+      badges.push({ canvas: slashBadge, x: 0, y: 15, w: 60 });
     }
 
-    if (options?.customBadges?.length) {
-      if (options?.overwriteBadges) {
-        badges = [];
-      };
-
-      const newBadges = await addBadges(options.customBadges, read)
-      badges.push(...newBadges)
+    ctx.drawImage(botBagde, textLength + 310, 110);
+  } else {
+    for (let i = 0; i < flagsUser.length; i++) {
+      if (flagsUser[i].startsWith('BOOSTER')) {
+        const badge = await loadImage(
+          Buffer.from(nitroBadges[flagsUser[i]], 'base64')
+        );
+        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
+      } else if (flagsUser[i].startsWith('NITRO')) {
+        const badge = await loadImage(
+          Buffer.from(otherBadges[flagsUser[i]], 'base64')
+        );
+        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
+      } else {
+        const badge = await loadImage(
+          Buffer.from(otherBadges[flagsUser[i]], 'base64')
+        );
+        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
+      }
     }
-
-    let x = 800;
-    badges.forEach((badge) => {
-      badge.jimp
-        .shadow({ size: 1, opacity: 0.3, y: 3, x: 0, blur: 2 })
-        .opacity(0.9);
-      cardBase.composite(badge.jimp, x + badge.x, badge.y);
-      x -= 60;
-    });
-
-    cardBase.composite(botBagde, textLength + 310, 110);
   }
 
-  const buffer = await cardBase.getBufferAsync(MIME_PNG);
+  if (options?.customBadges?.length) {
+    if (options?.overwriteBadges) {
+      badges = [];
+    }
 
-  return buffer;
+    for (let i = 0; i < options.customBadges.length; i++) {
+      const badge = await loadImage(parsePng(options.customBadges[i]));
+      badges.push({ canvas: badge, x: 10, y: 22, w: 46 });
+    }
+  }
+
+  let x = 800;
+  badges.forEach((badge) => {
+    const { canvas, x: bX, y, w } = badge;
+
+    ctx.drawImage(canvas, x + bX, y, w, w);
+    x -= 59;
+  });
+
+  return canvas;
 }
 
-module.exports = profileImage;
+function genXpBar(options){
+  const { currentXp, requiredXp, level, rank, barColor } = options.rankData;
+
+  if(!currentXp || !requiredXp || !level) {
+    throw new Error('Discord Arts | rankData options requires: currentXp, requiredXp and level properties')
+  }
+
+  const canvas = createCanvas(885, 303);
+  const ctx = canvas.getContext('2d');
+
+  const mY = 8
+
+  ctx.fillStyle = '#000'
+  ctx.globalAlpha = alphaValue;
+  ctx.beginPath();
+  ctx.roundRect(304, 248, 380, 33, [12]);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  const rankString = rank
+    ? `#${isNumber(rank, 'rankData:rank')}`
+    : '';
+  const lvlString = level
+    ? `Lvl ${isNumber(level, 'rankData:level')}`
+    : '';
+
+
+  ctx.font = '23px Helvetica';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#dadada';
+  ctx.fillText(`${currentXp} / ${requiredXp} XP`, 314, 273);
+
+  ctx.font = '23px Helvetica';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#dadada';
+  ctx.fillText(`${rankString}${rankString ? ' ' : ''}${lvlString}`, 674, 273);
+
+  ctx.globalAlpha = alphaValue;
+  ctx.fillStyle = '#000'
+  ctx.beginPath();
+  ctx.roundRect(304, 187-mY, 545, 36, [14]);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  ctx.beginPath();
+  ctx.roundRect(304, 187-mY, 545, 36, [14]);
+  ctx.clip();
+
+  ctx.fillStyle = barColor ? parseHex(barColor) : '#fff'
+  ctx.beginPath();
+  ctx.roundRect(304, 187-mY, Math.round((currentXp*544)/requiredXp), 36, [14]);
+  ctx.fill();
+
+  return canvas
+}
+
+function addShadow(canvasToEdit) {
+  const canvas = createCanvas(885, 303);
+  const ctx = canvas.getContext('2d');
+  ctx.filter = 'drop-shadow(0px 4px 4px #000)';
+  ctx.globalAlpha = alphaValue;
+  ctx.drawImage(canvasToEdit, 0, 0);
+
+  return canvas;
+}

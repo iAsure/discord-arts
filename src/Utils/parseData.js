@@ -27,7 +27,7 @@ function parsePng(imgString) {
 }
 
 function parseHex(hexString){
-  const hexRegex = new RegExp(/[a-fA-F0-9]{6}|#[a-fA-F0-9]{6}|[a-fA-F0-9]{3}|#[a-fA-F0-9]{3}/)
+  const hexRegex = new RegExp(/^[a-fA-F0-9]{6}$|^#[a-fA-F0-9]{6}$|^[a-fA-F0-9]{3}$|^#[a-fA-F0-9]{3}$/)
 
   if(!hexRegex.test(hexString))
     throw new Error(`Discord Arts | Invalid Hex Code (${hexString || undefined})`);
@@ -45,4 +45,11 @@ function isString(param, type){
   return param
 }
 
-module.exports = { parseImg, parsePng, parseHex, isString }
+function isNumber(param, type){
+  if(isNaN(param))
+    throw new Error(`Discord Arts | Invalid ${type} (${param || undefined}), must be a number`);
+
+  return param
+}
+
+module.exports = { parseImg, parsePng, parseHex, isString, isNumber }

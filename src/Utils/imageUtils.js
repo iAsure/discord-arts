@@ -1,6 +1,5 @@
-const { parsePng } = require('./parseData');
-
 function parseUsername(username, ctx, font, size, maxLength) {
+  username = username.replace(/\s/g, '') ? username : '?????'
   let usernameChars = username.split('');
   let editableUsername = '';
   let finalUsername = '';
@@ -32,24 +31,10 @@ function parseUsername(username, ctx, font, size, maxLength) {
   }
 
   return {
-    username: textLength > maxLength ? finalUsername + '...' : finalUsername.replace(/\s/g, '') ? finalUsername : '?????',
+    username: finalUsername,
     newSize,
     textLength,
   };
 }
 
-async function addBadges(arrayBadges, read){
-
-  const badges = []
-
-  for (let i = 0; i < arrayBadges.length; i++) {
-    const badgeJimp = await read(parsePng(arrayBadges[i]));
-    badgeJimp.resize(46, 46);
-    badges.push({ jimp: badgeJimp, x: 10, y: 23 });
-  }
-
-  return badges
-
-}
-
-module.exports = { parseUsername, addBadges }
+module.exports = { parseUsername }

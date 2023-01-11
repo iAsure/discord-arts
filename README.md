@@ -16,30 +16,47 @@
 
 ***
 
-# 📦 Features
+# 📦 Installation
 
-## 🤖 `profileImage(userId, imgOptions)`
+```bash
+$ npm i discord-arts@latest
+```
+
+# ✨ Features
+
++ 🚀 Fast generation!
++ 🎨 Simple and beautiful design
++ 🎖️ Easy to use
++ 💎 Beginner friendly
+
+# 🖼️ Cards
+
+## 🪄 profileImage(userId, imgOptions?)
 
 *Generates the card of a user/bot, with its badges.*
 
-PARAMETER | TYPE | REQUIRED | DESCRIPTION 
--------- | --------- | -------- | -------- 
-userId| `string` | `✔️` | Discord User ID
-imgOptions| `object` | `✖️` | Customize the card in multiple ways
-
-### imgOptions `🔴NEW!!`
-PARAMETER | TYPE | DEFAULT | DESCRIPTION 
--------- | --------- | -------- | -------- 
-customTag| `string` | `✖️` | Text below the user
-customBadges| `string[]` | `✖️` | Your own png badges `path and URL`
-customBackground| `string` | `✖️` | Change the background to any image `path and URL`
-overwriteBadges| `boolean` | `false` | Merge your badges with the discord defaults
-usernameColor| `string` | `✖️` | Username HEX color
-tagColor| `string` | `✖️` | Tag HEX color
-borderColor| `string or string[]` | `✖️` | Border HEX color, can be gradient if 2 colors are used
-borderAllign| `string` | `horizontal` | Gradient alignment if 2 colors are used
-presenceStatus| `string` | `✖️` | User status to be displayed below the avatar
-squareAvatar| `boolean` | `false` | Change avatar shape to a square
+```js
+profileImage(userId, {
+  customTag?: string // Text below the user
+  customBadges?: string[] // Your own png badges (path and URL)
+  customBackground?: string // Change the background to any image (path and URL)
+  overwriteBadges?: boolean // Merge your badges with the discord defaults
+  badgesFrame?: boolean // Creates a small frame behind the badges
+  usernameColor?: string // Username HEX color
+  tagColor?: string // Tag HEX color
+  borderColor?: string | string[] // Border HEX color, can be gradient if 2 colors are used
+  borderAllign?: string // Gradient alignment if 2 colors are used
+  presenceStatus?: string // User status to be displayed below the avatar
+  squareAvatar?: boolean // Change avatar shape to a square
+  rankData?: {
+    currentXp: number // Current user XP
+    requiredXp: number // XP required to level up
+    level: number // Current user level
+    rank?: number // Position on the leaderboard
+    barColor?: string // HEX XP bar color
+  }
+})
+```
 
 #### Returns: **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<**[Buffer](https://nodejs.org/api/buffer.html)**>**
 
@@ -67,53 +84,68 @@ interaction.followUp({ files: [attachment] });
 
 ### 🖼️Example Results 
 
-> ```javascript
-> profileImage('ID')
-> ```
+## Default Card
+
 > ![Default](https://i.imgur.com/Iu5E2Kf.png)
+>> ```javascript
+>> profileImage('ID')
+>> ```
 
 ***
 
-> ```javascript
-> profileImage('ID', {
->   customTag: 'Programmer',
->   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
->   customBackground: 'https://i.imgur.com/Zm06vsb.png',
->   overwriteBadges: true,
->   borderColor: ['#841821', '#015b58'],
->   presenceStatus: 'dnd'
-> });
-> ```
-> ![Default](https://i.imgur.com/14AuGJ7.png)
+## Rank Card
+
+> ![Default](https://i.imgur.com/gLA4M7k.png)
+>> ```javascript
+>> profileImage('ID', {
+>>   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
+>>   overwriteBadges: true,
+>>   borderColor: '#087996',
+>>   presenceStatus: 'dnd',
+>>   badgesFrame: true,
+>>   rankData: {
+>>     currentXp: 2100,
+>>     requiredXp: 3000,
+>>     rank: 10,
+>>     level: 20,
+>>     barColor: '0b7b95'
+>>   }
+>> });
+>> ```
 
 ***
 
-> ```javascript
-> profileImage('ID', {
->   customTag: 'Minecraft Modder',
->   customBadges: [ './badges/booster.png','./badges/orange.png', './badges/giveaway.png' ],
->   overwriteBadges: false,
->   usernameColor: '#d9dfef',
->   borderColor: ['#f90257', '#043a92'],
->   presenceStatus: 'idle',
->   squareAvatar: true
-> });
-> ```
-> ![Default](https://i.imgur.com/YCTJ3xe.png)
+## Square Avatar and Custom Badges
+
+> ![Default](https://i.imgur.com/qfVR5hp.png)
+>> ```javascript
+>> profileImage('ID', {
+>>   customBadges: [ './booster.png','./orange.png', './giveaway.png' ],
+>>   overwriteBadges: false,
+>>   usernameColor: '#d9dfef',
+>>   borderColor: ['#f90257', '#043a92'],
+>>   presenceStatus: 'idle',
+>>   squareAvatar: true
+>> });
+>> ```
 
 ***
 
-> ```javascript
-> profileImage('ID', {
->   customTag: 'Minecraft Bot',
->   customBackground: './imgs/axoBackground.png',
->   usernameColor: '#ffbddf',
->   borderColor: '#fe6a90',
->   presenceStatus: 'online',
->   squareAvatar: true
-> });
-> ```
-> ![Default](https://i.imgur.com/yRzIo2R.png)
+## Custom Bot Card
+
+> ![Default](https://i.imgur.com/naPwX7v.png)
+>> ```javascript
+>> profileImage('ID', {
+>>   customTag: 'Minecraft Bot',
+>>   customBackground: './imgs/axoBackground.png',
+>>   customBadges: [ './booster.png','./orange.png'],
+>>   usernameColor: '#ffbddf',
+>>   borderColor: '#fe6a90',
+>>   presenceStatus: 'online',
+>>   squareAvatar: true,
+>>   badgesFrame: true
+>> });
+>> ```
 
 ***
 
