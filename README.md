@@ -37,23 +37,23 @@ $ npm i discord-arts@latest
 
 ```js
 profileImage(userId, {
-  customTag?: string // Text below the user
-  customBadges?: string[] // Your own png badges (path and URL)
-  customBackground?: string // Change the background to any image (path and URL)
-  overwriteBadges?: boolean // Merge your badges with the discord defaults
-  badgesFrame?: boolean // Creates a small frame behind the badges
-  usernameColor?: string // Username HEX color
-  tagColor?: string // Tag HEX color
-  borderColor?: string | string[] // Border HEX color, can be gradient if 2 colors are used
-  borderAllign?: string // Gradient alignment if 2 colors are used
-  presenceStatus?: string // User status to be displayed below the avatar
-  squareAvatar?: boolean // Change avatar shape to a square
+  customTag?: string, // Text below the user
+  customBadges?: string[], // Your own png badges (path and URL)
+  customBackground?: string, // Change the background to any image (path and URL)
+  overwriteBadges?: boolean, // Merge your badges with the discord defaults
+  badgesFrame?: boolean, // Creates a small frame behind the badges
+  usernameColor?: string, // Username HEX color
+  tagColor?: string, // Tag HEX color
+  borderColor?: string | string[], // Border HEX color, can be gradient if 2 colors are used
+  borderAllign?: string, // Gradient alignment if 2 colors are used
+  presenceStatus?: string, // User status to be displayed below the avatar
+  squareAvatar?: boolean, // Change avatar shape to a square
   rankData?: {
-    currentXp: number // Current user XP
-    requiredXp: number // XP required to level up
-    level: number // Current user level
-    rank?: number // Position on the leaderboard
-    barColor?: string // HEX XP bar color
+    currentXp: number, // Current user XP
+    requiredXp: number, // XP required to level up
+    level: number, // Current user level
+    rank?: number, // Position on the leaderboard
+    barColor?: string, // HEX XP bar color
   }
 })
 ```
