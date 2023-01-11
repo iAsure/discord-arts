@@ -99,7 +99,6 @@ interaction.followUp({ files: [attachment] });
 >> ```javascript
 >> profileImage('ID', {
 >>   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
->>   overwriteBadges: true,
 >>   borderColor: '#087996',
 >>   presenceStatus: 'dnd',
 >>   badgesFrame: true,
