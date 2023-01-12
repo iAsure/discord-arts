@@ -6,7 +6,7 @@ interface rankOptions {
     requiredXp: number;
     level: number;
     rank?: number;
-    barColor?: number;
+    barColor?: string;
 }
 
 interface profileOptions {
