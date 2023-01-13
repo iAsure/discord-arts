@@ -266,11 +266,11 @@ async function genStatus(canvasToEdit, options) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const validStatus = ['idle', 'dnd', 'online', 'invisible'];
+  const validStatus = ['idle', 'dnd', 'online', 'invisible', 'streaming'];
 
   if (!validStatus.includes(options.presenceStatus))
     throw new Error(
-      `Discord Arts | Invalid presenceStatus (${options.presenceStatus}) must be 'idle | dnd | online | invisible'`
+      `Discord Arts | Invalid presenceStatus (${options.presenceStatus}) must be 'idle | dnd | online | invisible | streaming'`
     );
 
   const status = await loadImage(
@@ -286,7 +286,7 @@ async function genStatus(canvasToEdit, options) {
 
   ctx.globalCompositeOperation = 'source-over';
 
-  ctx.drawImage(status, 0, 0);
+  ctx.drawImage(status, 212.5, 204);
 
   return canvas;
 }
@@ -426,17 +426,17 @@ function genXpBar(options){
   ctx.globalAlpha = alphaValue;
   ctx.fillStyle = '#000'
   ctx.beginPath();
-  ctx.roundRect(304, 187-mY, 545, 36, [14]);
+  ctx.roundRect(304, 187-mY, 557, 36, [14]);
   ctx.fill();
   ctx.globalAlpha = 1;
 
   ctx.beginPath();
-  ctx.roundRect(304, 187-mY, 545, 36, [14]);
+  ctx.roundRect(304, 187-mY, 557, 36, [14]);
   ctx.clip();
 
   ctx.fillStyle = barColor ? parseHex(barColor) : '#fff'
   ctx.beginPath();
-  ctx.roundRect(304, 187-mY, Math.round((currentXp*544)/requiredXp), 36, [14]);
+  ctx.roundRect(304, 187-mY, Math.round((currentXp*557)/requiredXp), 36, [14]);
   ctx.fill();
 
   return canvas
