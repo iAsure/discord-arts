@@ -64,10 +64,12 @@ async function profileImage(user, options) {
     ctx.drawImage(border, 0, 0);
   }
 
-  const cardBadges = await genBadges(data, options);
-  const badgesShadow = addShadow(cardBadges);
-  ctx.drawImage(badgesShadow, 0, 0);
-  ctx.drawImage(cardBadges, 0, 0);
+  if (!options?.removeBadges) {
+    const cardBadges = await genBadges(data, options);
+    const badgesShadow = addShadow(cardBadges);
+    ctx.drawImage(badgesShadow, 0, 0);
+    ctx.drawImage(cardBadges, 0, 0);
+  }
 
   if (options?.rankData){
     const xpBar = genXpBar(options);
@@ -266,15 +268,17 @@ async function genStatus(canvasToEdit, options) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const validStatus = ['idle', 'dnd', 'online', 'invisible', 'streaming'];
+  const validStatus = ['idle', 'dnd', 'online', 'invisible', 'offline', 'streaming'];
 
   if (!validStatus.includes(options.presenceStatus))
     throw new Error(
-      `Discord Arts | Invalid presenceStatus (${options.presenceStatus}) must be 'idle | dnd | online | invisible | streaming'`
+      `Discord Arts | Invalid presenceStatus (${options.presenceStatus}) must be 'idle | dnd | online | invisible | offline | streaming'`
     );
+   
+  const statusString = options.presenceStatus == 'offline' ? 'invisible' : options.presenceStatus
 
   const status = await loadImage(
-    Buffer.from(statusImgs[options.presenceStatus], 'base64')
+    Buffer.from(statusImgs[statusString], 'base64')
   );
 
   ctx.drawImage(canvasToEdit, 0, 0);
