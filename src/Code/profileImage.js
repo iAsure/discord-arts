@@ -393,7 +393,7 @@ async function genBadges(data, options) {
 function genXpBar(options){
   const { currentXp, requiredXp, level, rank, barColor } = options.rankData;
 
-  if(!currentXp || !requiredXp || !level) {
+  if(isNaN(currentXp) || isNaN(requiredXp) || isNaN(level)) {
     throw new Error('Discord Arts | rankData options requires: currentXp, requiredXp and level properties')
   }
 
