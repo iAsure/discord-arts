@@ -409,10 +409,10 @@ function genXpBar(options){
   ctx.fill();
   ctx.globalAlpha = 1;
 
-  const rankString = rank
+  const rankString = !isNaN(rank)
     ? `#${isNumber(rank, 'rankData:rank')}`
     : '';
-  const lvlString = level
+  const lvlString = !isNaN(level)
     ? `Lvl ${isNumber(level, 'rankData:level')}`
     : '';
 
