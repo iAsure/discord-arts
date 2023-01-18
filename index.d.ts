@@ -1,4 +1,4 @@
-type presenceStatus = 'idle' | 'dnd' | 'online' | 'invisible' | 'offline' | 'streaming'
+type presenceStatus = 'online' | 'idle' | 'offline' | 'dnd' | 'invisible' | 'streaming' | 'phone'
 type borderAllign = 'horizontal' | 'vertical'
 
 interface rankOptions {
@@ -20,6 +20,7 @@ interface profileOptions {
     borderAllign?: borderAllign;
     badgesFrame?: boolean;
     removeBadges?: boolean;
+    removeBorder?: boolean;
     presenceStatus?: presenceStatus;
     squareAvatar?: boolean;
     rankData?: rankOptions;

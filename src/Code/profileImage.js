@@ -45,7 +45,8 @@ async function profileImage(user, options) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  ctx.roundRect(0, 0, 885, 303, [34]);
+  if(options?.removeBorder) ctx.roundRect(9, 9, 867, 285, [26]);
+  else ctx.roundRect(0, 0, 885, 303, [34]);
   ctx.clip()
 
   const cardBase = await genBase(data, options);
@@ -59,7 +60,7 @@ async function profileImage(user, options) {
   ctx.drawImage(textAvatarShadow, 0, 0);
   ctx.drawImage(cardTextAndAvatar, 0, 0);
 
-  if (options?.borderColor) {
+  if (options?.borderColor.length) {
     const border = await genBorder(options);
     ctx.drawImage(border, 0, 0);
   }
@@ -141,7 +142,7 @@ async function genFrame(data, options) {
         : data.public_flags_array.length) +
       (options?.customBadges?.length ? options?.customBadges?.length : 0);
 
-  if(options?.badgesFrame && badgesLength > 0){
+  if(options?.badgesFrame && badgesLength > 0 && !options?.removeBadges){
     ctx.fillStyle = '#000'
     ctx.globalAlpha = alphaValue;
     ctx.beginPath();
@@ -182,7 +183,7 @@ async function genBorder(options) {
   ctx.globalCompositeOperation = 'destination-out';
 
   ctx.beginPath();
-  ctx.roundRect(9, 9, 885-18, 303-18, [25])
+  ctx.roundRect(9, 9, 867, 285, [25])
   ctx.fill()
 
   return canvas;
@@ -268,11 +269,11 @@ async function genStatus(canvasToEdit, options) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const validStatus = ['idle', 'dnd', 'online', 'invisible', 'offline', 'streaming'];
+  const validStatus = ['idle', 'dnd', 'online', 'invisible', 'offline', 'streaming', 'phone'];
 
   if (!validStatus.includes(options.presenceStatus))
     throw new Error(
-      `Discord Arts | Invalid presenceStatus (${options.presenceStatus}) must be 'idle | dnd | online | invisible | offline | streaming'`
+      `Discord Arts | Invalid presenceStatus ('${options.presenceStatus}') must be 'online' | 'idle' | 'offline' | 'dnd' | 'invisible' | 'streaming' | 'phone'`
     );
    
   const statusString = options.presenceStatus == 'offline' ? 'invisible' : options.presenceStatus
@@ -281,16 +282,20 @@ async function genStatus(canvasToEdit, options) {
     Buffer.from(statusImgs[statusString], 'base64')
   );
 
+  const cX = options.presenceStatus == 'phone' ? 212.5+12 : 223
+  const cY = options.presenceStatus == 'phone' ? 204-2 : 202
+
   ctx.drawImage(canvasToEdit, 0, 0);
 
   ctx.globalCompositeOperation = 'destination-out';
 
-  ctx.roundRect(212, 204, 62, 62, [62])
+  if (options.presenceStatus == 'phone') ctx.roundRect(cX-8, cY-8, 57, 78, [10])
+  else ctx.roundRect(212, 204, 62, 62, [62])
   ctx.fill()
 
   ctx.globalCompositeOperation = 'source-over';
 
-  ctx.drawImage(status, 212.5, 204);
+  ctx.drawImage(status, cX, cY);
 
   return canvas;
 }

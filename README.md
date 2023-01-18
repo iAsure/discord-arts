@@ -42,6 +42,8 @@ profileImage(userId, {
   customBackground?: string, // Change the background to any image (path and URL)
   overwriteBadges?: boolean, // Merge your badges with the discord defaults
   badgesFrame?: boolean, // Creates a small frame behind the badges
+  removeBadges?: boolean, // Removes badges, whether custom or from discord
+  removeBorder?: boolean, // Removes the image border, custom and normal
   usernameColor?: string, // Username HEX color
   tagColor?: string, // Tag HEX color
   borderColor?: string | string[], // Border HEX color, can be gradient if 2 colors are used
