@@ -1,6 +1,7 @@
 const { createCanvas, loadImage, GlobalFonts } = require('@napi-rs/canvas');
 const fetch = require('node-fetch');
 const path = require('path');
+const sharp = require('sharp')
 
 const {
   otherImgs,
@@ -60,7 +61,7 @@ async function profileImage(user, options) {
   ctx.drawImage(textAvatarShadow, 0, 0);
   ctx.drawImage(cardTextAndAvatar, 0, 0);
 
-  if (options?.borderColor.length) {
+  if ((typeof options?.borderColor == 'string' && options?.borderColor) || (typeof options?.borderColor == 'object' && options?.borderColor.length)) {
     const border = await genBorder(options);
     ctx.drawImage(border, 0, 0);
   }
@@ -161,11 +162,11 @@ async function genBorder(options) {
   if (typeof options.borderColor == 'string')
     borderColors.push(options.borderColor);
   else borderColors.push(...options.borderColor);
-
+  
   if (borderColors.length > 2)
-    throw new Error(
-      `Discord Arts | Invalid borderColor length (${borderColors.length}) must be a maximum of 2 colors`
-    );
+  throw new Error(
+    `Discord Arts | Invalid borderColor length (${borderColors.length}) must be a maximum of 2 colors`
+  );
 
   const gradX = options.borderAllign == 'vertical' ? 0 : 885;
   const gradY = options.borderAllign == 'vertical' ? 303 : 0;
@@ -282,8 +283,8 @@ async function genStatus(canvasToEdit, options) {
     Buffer.from(statusImgs[statusString], 'base64')
   );
 
-  const cX = options.presenceStatus == 'phone' ? 212.5+12 : 223
-  const cY = options.presenceStatus == 'phone' ? 204-2 : 202
+  const cX = options.presenceStatus == 'phone' ? 224.5 : 212
+  const cY = options.presenceStatus == 'phone' ? 202 : 204
 
   ctx.drawImage(canvasToEdit, 0, 0);
 
@@ -379,15 +380,16 @@ async function genBadges(data, options) {
     }
 
     for (let i = 0; i < options.customBadges.length; i++) {
-      const badge = await loadImage(parsePng(options.customBadges[i]));
-      badges.push({ canvas: badge, x: 10, y: 22, w: 46 });
+      const sharpBuff = await sharp(parsePng(options.customBadges[i])).resize(46, 46).png().toBuffer()
+      const newCanv = await loadImage(sharpBuff)
+
+      badges.push({ canvas: newCanv, x: 10, y: 22, w: 46 });
     }
   }
 
   let x = 800;
-  badges.forEach((badge) => {
+  badges.forEach(async (badge) => {
     const { canvas, x: bX, y, w } = badge;
-
     ctx.drawImage(canvas, x + bX, y, w, w);
     x -= 59;
   });

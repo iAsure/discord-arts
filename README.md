@@ -99,7 +99,7 @@ interaction.followUp({ files: [attachment] });
 
 > ![Default](https://i.imgur.com/gLA4M7k.png)
 >> ```javascript
->> profileImage('ID', {
+>> profileImage('UserID', {
 >>   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
 >>   borderColor: '#087996',
 >>   presenceStatus: 'dnd',
@@ -120,7 +120,7 @@ interaction.followUp({ files: [attachment] });
 
 > ![Default](https://i.imgur.com/qfVR5hp.png)
 >> ```javascript
->> profileImage('ID', {
+>> profileImage('UserID', {
 >>   customBadges: [ './booster.png','./orange.png', './giveaway.png' ],
 >>   overwriteBadges: false,
 >>   usernameColor: '#d9dfef',
@@ -136,7 +136,7 @@ interaction.followUp({ files: [attachment] });
 
 > ![Default](https://i.imgur.com/naPwX7v.png)
 >> ```javascript
->> profileImage('ID', {
+>> profileImage('UserID', {
 >>   customTag: 'Minecraft Bot',
 >>   customBackground: './imgs/axoBackground.png',
 >>   customBadges: [ './booster.png','./orange.png'],
