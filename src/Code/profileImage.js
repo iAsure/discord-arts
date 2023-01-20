@@ -1,7 +1,6 @@
 const { createCanvas, loadImage, GlobalFonts } = require('@napi-rs/canvas');
 const fetch = require('node-fetch');
 const path = require('path');
-const sharp = require('sharp')
 
 const {
   otherImgs,
@@ -17,7 +16,7 @@ const {
   parseHex,
   parsePng,
   isString,
-  isNumber
+  isNumber,
 } = require('../Utils/parseData');
 
 GlobalFonts.registerFromPath(
@@ -46,9 +45,9 @@ async function profileImage(user, options) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  if(options?.removeBorder) ctx.roundRect(9, 9, 867, 285, [26]);
+  if (options?.removeBorder) ctx.roundRect(9, 9, 867, 285, [26]);
   else ctx.roundRect(0, 0, 885, 303, [34]);
-  ctx.clip()
+  ctx.clip();
 
   const cardBase = await genBase(data, options);
   ctx.drawImage(cardBase, 0, 0);
@@ -61,7 +60,10 @@ async function profileImage(user, options) {
   ctx.drawImage(textAvatarShadow, 0, 0);
   ctx.drawImage(cardTextAndAvatar, 0, 0);
 
-  if ((typeof options?.borderColor == 'string' && options?.borderColor) || (typeof options?.borderColor == 'object' && options?.borderColor.length)) {
+  if (
+    (typeof options?.borderColor == 'string' && options?.borderColor) ||
+    (typeof options?.borderColor == 'object' && options?.borderColor.length)
+  ) {
     const border = await genBorder(options);
     ctx.drawImage(border, 0, 0);
   }
@@ -73,7 +75,7 @@ async function profileImage(user, options) {
     ctx.drawImage(cardBadges, 0, 0);
   }
 
-  if (options?.rankData){
+  if (options?.rankData) {
     const xpBar = genXpBar(options);
     ctx.drawImage(xpBar, 0, 0);
   }
@@ -102,19 +104,19 @@ async function genBase(data, options) {
   const wY = condAvatar ? 303 : wX;
   const cY = condAvatar ? 0 : -345;
 
-  ctx.fillStyle = '#18191c'
+  ctx.fillStyle = '#18191c';
   ctx.beginPath();
   ctx.fillRect(0, 0, 885, 303);
-  ctx.fill()
+  ctx.fill();
 
   ctx.filter = 'blur(3px)';
   ctx.drawImage(cardBackground, 0, cY, wX, wY);
 
   ctx.globalAlpha = 0.2;
-  ctx.fillStyle = '#2a2d33'
+  ctx.fillStyle = '#2a2d33';
   ctx.beginPath();
   ctx.fillRect(0, 0, 885, 303);
-  ctx.fill()
+  ctx.fill();
 
   return canvas;
 }
@@ -131,24 +133,30 @@ async function genFrame(data, options) {
   ctx.globalCompositeOperation = 'source-over';
 
   ctx.globalAlpha = alphaValue;
-  ctx.fillStyle = '#000'
+  ctx.fillStyle = '#000';
   ctx.beginPath();
   ctx.roundRect(696, 248, 165, 33, [12]);
-  ctx.fill()
+  ctx.fill();
   ctx.globalAlpha = 1;
 
   const badgesLength =
-      (options?.overwriteBadges && options?.customBadges?.length
-        ? 0
-        : data.public_flags_array.length) +
-      (options?.customBadges?.length ? options?.customBadges?.length : 0);
+    (options?.overwriteBadges && options?.customBadges?.length
+      ? 0
+      : data.public_flags_array.length) +
+    (options?.customBadges?.length ? options?.customBadges?.length : 0);
 
-  if(options?.badgesFrame && badgesLength > 0 && !options?.removeBadges){
-    ctx.fillStyle = '#000'
+  if (options?.badgesFrame && badgesLength > 0 && !options?.removeBadges) {
+    ctx.fillStyle = '#000';
     ctx.globalAlpha = alphaValue;
     ctx.beginPath();
-    ctx.roundRect(800-60*(badgesLength-1)-3, 15, (60*badgesLength)+8, 60, [17]);
-    ctx.fill()
+    ctx.roundRect(
+      800 - 60 * (badgesLength - 1) - 3,
+      15,
+      60 * badgesLength + 8,
+      60,
+      [17]
+    );
+    ctx.fill();
   }
 
   return canvas;
@@ -162,11 +170,11 @@ async function genBorder(options) {
   if (typeof options.borderColor == 'string')
     borderColors.push(options.borderColor);
   else borderColors.push(...options.borderColor);
-  
+
   if (borderColors.length > 2)
-  throw new Error(
-    `Discord Arts | Invalid borderColor length (${borderColors.length}) must be a maximum of 2 colors`
-  );
+    throw new Error(
+      `Discord Arts | Invalid borderColor length (${borderColors.length}) must be a maximum of 2 colors`
+    );
 
   const gradX = options.borderAllign == 'vertical' ? 0 : 885;
   const gradY = options.borderAllign == 'vertical' ? 303 : 0;
@@ -184,8 +192,8 @@ async function genBorder(options) {
   ctx.globalCompositeOperation = 'destination-out';
 
   ctx.beginPath();
-  ctx.roundRect(9, 9, 867, 285, [25])
-  ctx.fill()
+  ctx.roundRect(9, 9, 867, 285, [25]);
+  ctx.fill();
 
   return canvas;
 }
@@ -229,7 +237,7 @@ async function genTextAndAvatar(data, options) {
     : '#FFFFFF';
   ctx.fillText(username, 300, 155);
 
-  if(!options?.rankData){
+  if (!options?.rankData) {
     ctx.font = '60px Helvetica';
     ctx.fillStyle = options?.tagColor ? parseHex(options.tagColor) : '#dadada';
     ctx.fillText(tag, 300, 215);
@@ -245,12 +253,12 @@ async function genTextAndAvatar(data, options) {
   const cardAvatar = await loadImage(newAvatarURL);
 
   const roundValue = options?.squareAvatar ? 30 : 225;
-  
+
   ctx.beginPath();
   ctx.roundRect(47, 39, 225, 225, [roundValue]);
   ctx.clip();
 
-  ctx.fillStyle = '#292b2f'
+  ctx.fillStyle = '#292b2f';
   ctx.beginPath();
   ctx.roundRect(47, 39, 225, 225, [roundValue]);
   ctx.fill();
@@ -270,29 +278,39 @@ async function genStatus(canvasToEdit, options) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const validStatus = ['idle', 'dnd', 'online', 'invisible', 'offline', 'streaming', 'phone'];
+  const validStatus = [
+    'idle',
+    'dnd',
+    'online',
+    'invisible',
+    'offline',
+    'streaming',
+    'phone',
+  ];
 
   if (!validStatus.includes(options.presenceStatus))
     throw new Error(
       `Discord Arts | Invalid presenceStatus ('${options.presenceStatus}') must be 'online' | 'idle' | 'offline' | 'dnd' | 'invisible' | 'streaming' | 'phone'`
     );
-   
-  const statusString = options.presenceStatus == 'offline' ? 'invisible' : options.presenceStatus
+
+  const statusString =
+    options.presenceStatus == 'offline' ? 'invisible' : options.presenceStatus;
 
   const status = await loadImage(
     Buffer.from(statusImgs[statusString], 'base64')
   );
 
-  const cX = options.presenceStatus == 'phone' ? 224.5 : 212
-  const cY = options.presenceStatus == 'phone' ? 202 : 204
+  const cX = options.presenceStatus == 'phone' ? 224.5 : 212;
+  const cY = options.presenceStatus == 'phone' ? 202 : 204;
 
   ctx.drawImage(canvasToEdit, 0, 0);
 
   ctx.globalCompositeOperation = 'destination-out';
 
-  if (options.presenceStatus == 'phone') ctx.roundRect(cX-8, cY-8, 57, 78, [10])
-  else ctx.roundRect(212, 204, 62, 62, [62])
-  ctx.fill()
+  if (options.presenceStatus == 'phone')
+    ctx.roundRect(cX - 8, cY - 8, 57, 78, [10]);
+  else ctx.roundRect(212, 204, 62, 62, [62]);
+  ctx.fill();
 
   ctx.globalCompositeOperation = 'source-over';
 
@@ -380,10 +398,8 @@ async function genBadges(data, options) {
     }
 
     for (let i = 0; i < options.customBadges.length; i++) {
-      const sharpBuff = await sharp(parsePng(options.customBadges[i])).resize(46, 46).png().toBuffer()
-      const newCanv = await loadImage(sharpBuff)
-
-      badges.push({ canvas: newCanv, x: 10, y: 22, w: 46 });
+      const canvas = await loadImage(parsePng(options.customBadges[i]));
+      badges.push({ canvas: canvas, x: 10, y: 22, w: 46 });
     }
   }
 
@@ -397,32 +413,31 @@ async function genBadges(data, options) {
   return canvas;
 }
 
-function genXpBar(options){
+function genXpBar(options) {
   const { currentXp, requiredXp, level, rank, barColor } = options.rankData;
 
-  if(isNaN(currentXp) || isNaN(requiredXp) || isNaN(level)) {
-    throw new Error('Discord Arts | rankData options requires: currentXp, requiredXp and level properties')
+  if (isNaN(currentXp) || isNaN(requiredXp) || isNaN(level)) {
+    throw new Error(
+      'Discord Arts | rankData options requires: currentXp, requiredXp and level properties'
+    );
   }
 
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const mY = 8
+  const mY = 8;
 
-  ctx.fillStyle = '#000'
+  ctx.fillStyle = '#000';
   ctx.globalAlpha = alphaValue;
   ctx.beginPath();
   ctx.roundRect(304, 248, 380, 33, [12]);
   ctx.fill();
   ctx.globalAlpha = 1;
 
-  const rankString = !isNaN(rank)
-    ? `#${isNumber(rank, 'rankData:rank')}`
-    : '';
+  const rankString = !isNaN(rank) ? `#${isNumber(rank, 'rankData:rank')}` : '';
   const lvlString = !isNaN(level)
     ? `Lvl ${isNumber(level, 'rankData:level')}`
     : '';
-
 
   ctx.font = '23px Helvetica';
   ctx.textAlign = 'left';
@@ -435,22 +450,24 @@ function genXpBar(options){
   ctx.fillText(`${rankString}${rankString ? ' ' : ''}${lvlString}`, 674, 273);
 
   ctx.globalAlpha = alphaValue;
-  ctx.fillStyle = '#000'
+  ctx.fillStyle = '#000';
   ctx.beginPath();
-  ctx.roundRect(304, 187-mY, 557, 36, [14]);
+  ctx.roundRect(304, 187 - mY, 557, 36, [14]);
   ctx.fill();
   ctx.globalAlpha = 1;
 
   ctx.beginPath();
-  ctx.roundRect(304, 187-mY, 557, 36, [14]);
+  ctx.roundRect(304, 187 - mY, 557, 36, [14]);
   ctx.clip();
 
-  ctx.fillStyle = barColor ? parseHex(barColor) : '#fff'
+  ctx.fillStyle = barColor ? parseHex(barColor) : '#fff';
   ctx.beginPath();
-  ctx.roundRect(304, 187-mY, Math.round((currentXp*557)/requiredXp), 36, [14]);
+  ctx.roundRect(304, 187 - mY, Math.round((currentXp * 557) / requiredXp), 36, [
+    14,
+  ]);
   ctx.fill();
 
-  return canvas
+  return canvas;
 }
 
 function addShadow(canvasToEdit) {
