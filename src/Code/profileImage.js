@@ -18,6 +18,7 @@ const {
   isString,
   isNumber,
 } = require('../Utils/parseData');
+const { numbersToStd } = require('../Utils/numbersToStd');
 
 GlobalFonts.registerFromPath(
   `${path.join(__dirname, '..', 'Fonts')}/HelveticaBold.ttf`,
@@ -442,12 +443,12 @@ function genXpBar(options) {
   ctx.font = '23px Helvetica';
   ctx.textAlign = 'left';
   ctx.fillStyle = '#dadada';
-  ctx.fillText(`${currentXp} / ${requiredXp} XP`, 314, 273);
+  ctx.fillText(`${numbersToStd(currentXp)} / ${numbersToStd(requiredXp)} XP`, 314, 273);
 
   ctx.font = '23px Helvetica';
   ctx.textAlign = 'right';
   ctx.fillStyle = '#dadada';
-  ctx.fillText(`${rankString}${rankString ? ' ' : ''}${lvlString}`, 674, 273);
+  ctx.fillText(`${rankString}${rankString ? ' ' : ''}${numbersToStd(Numbers(lvlString))}`, 674, 273);
 
   ctx.globalAlpha = alphaValue;
   ctx.fillStyle = '#000';
