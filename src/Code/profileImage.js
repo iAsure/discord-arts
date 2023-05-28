@@ -453,7 +453,7 @@ function genXpBar(options) {
   ctx.textAlign = "right";
   ctx.fillStyle = "#dadada";
   ctx.fillText(
-    `${rankString}${rankString ? " " : ""}${numbersToStd(Numbers(lvlString))}`,
+    `${rankString}${rankString ? " " : ""}${numbersToStd(Number(lvlString))}`,
     674,
     273
   );

@@ -4,13 +4,14 @@
  * @returns {string}
  */
 module.exports.numbersToStd = (exp) => {
-  let final = exp;
+  let final = Number(exp);
+
+  if (final == NaN) {final = 0;}
 
   const Billion = 1e9;
   const Million = 1e6;
 
-  if (String(final).includes("e")) {
-  } else if (final > Billion) {
+  if (final > Billion) {
     final = `${(final / Billion).toFixed(2)}B`;
   } else if (final > Million) {
     final = `${(final / Million).toFixed(2)}M`;
