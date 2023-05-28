@@ -1,8 +1,8 @@
 function parseUsername(username, ctx, font, size, maxLength) {
-  username = username.replace(/\s/g, '') ? username : '?????'
-  let usernameChars = username.split('');
-  let editableUsername = '';
-  let finalUsername = '';
+  username = username.replace(/\s/g, "") ? username : "?????";
+  let usernameChars = username.split("");
+  let editableUsername = "";
+  let finalUsername = "";
 
   let newSize = +size;
   let textLength;
@@ -10,21 +10,21 @@ function parseUsername(username, ctx, font, size, maxLength) {
   let finalized = false;
 
   while (!finalized) {
-    editableUsername = usernameChars.join('');
+    editableUsername = usernameChars.join("");
 
     ctx.font = `${newSize}px ${font}`;
-    ctx.textAlign = 'left';
-    ctx.fillStyle = '#FFFFFF';
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#FFFFFF";
 
     const actualLength = ctx.measureText(editableUsername).width;
 
     if (actualLength >= maxLength) {
-      if(newSize > 60) newSize -= 1;
+      if (newSize > 60) newSize -= 1;
       else usernameChars.pop();
     }
 
     if (actualLength <= maxLength) {
-      finalUsername = usernameChars.join('');
+      finalUsername = usernameChars.join("");
       textLength = actualLength;
       finalized = true;
     }
@@ -37,4 +37,4 @@ function parseUsername(username, ctx, font, size, maxLength) {
   };
 }
 
-module.exports = { parseUsername }
+module.exports = { parseUsername };

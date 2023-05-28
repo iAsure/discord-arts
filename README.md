@@ -1,4 +1,3 @@
-
 <div align='center'>
   <img src='https://i.imgur.com/NBpsl5W.png' alt='Discord Arts Banner' />
   <p align='center'>
@@ -14,7 +13,7 @@
   <strong>- Customized cards with Discord style -</strong>
 </p>
 
-***
+---
 
 # 📦 Installation
 
@@ -24,16 +23,16 @@ npm i discord-arts@latest
 
 # ✨ Features
 
-+ 🚀 Fast generation!
-+ 🎨 Simple and beautiful design
-+ 🎖️ Easy to use
-+ 💎 Beginner friendly
+- 🚀 Fast generation!
+- 🎨 Simple and beautiful design
+- 🎖️ Easy to use
+- 💎 Beginner friendly
 
 # 🖼️ Cards
 
 ## 🪄 profileImage(userId, imgOptions?)
 
-*Generates the card of a user/bot, with its badges.*
+_Generates the card of a user/bot, with its badges._
 
 ```js
 profileImage(userId, {
@@ -62,100 +61,108 @@ profileImage(userId, {
 
 #### Returns: **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<**[Buffer](https://nodejs.org/api/buffer.html)**>**
 
-***
+---
 
 ### 📃 Discord.js v14 Example
 
 ```javascript
-const { AttachmentBuilder } = require('discord.js');
-const { profileImage } = require('discord-arts');
+const { AttachmentBuilder } = require("discord.js");
+const { profileImage } = require("discord-arts");
 
 await interaction.deferReply();
-const user = interaction.options.getUser('user-option');
+const user = interaction.options.getUser("user-option");
 
 const buffer = await profileImage(user.id, {
-  customTag: 'Admin',
-  ...imgOptions
+  customTag: "Admin",
+  ...imgOptions,
 });
 
-const attachment = new AttachmentBuilder(buffer, { name: 'profile.png' });
+const attachment = new AttachmentBuilder(buffer, { name: "profile.png" });
 interaction.followUp({ files: [attachment] });
 ```
 
-***
+---
 
-### 🖼️Example Results 
+### 🖼️Example Results
 
 ## Default Card
 
 > ![Default](https://i.imgur.com/xV77f9g.png)
->> ```javascript
->> profileImage('ID')
->> ```
+>
+> > ```javascript
+> > profileImage("ID");
+> > ```
 
-***
+---
 
 ## Rank Card
 
 > ![Default](https://i.imgur.com/gLA4M7k.png)
->> ```javascript
->> profileImage('UserID', {
->>   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
->>   borderColor: '#087996',
->>   presenceStatus: 'dnd',
->>   badgesFrame: true,
->>   rankData: {
->>     currentXp: 2100,
->>     requiredXp: 3000,
->>     rank: 10,
->>     level: 20,
->>     barColor: '0b7b95'
->>   }
->> });
->> ```
+>
+> > ```javascript
+> > profileImage("UserID", {
+> >   customBadges: [
+> >     "./skull.png",
+> >     "./letter.png",
+> >     "./rocket.png",
+> >     "./crown.png",
+> >     "./hearth.png",
+> >   ],
+> >   borderColor: "#087996",
+> >   presenceStatus: "dnd",
+> >   badgesFrame: true,
+> >   rankData: {
+> >     currentXp: 2100,
+> >     requiredXp: 3000,
+> >     rank: 10,
+> >     level: 20,
+> >     barColor: "0b7b95",
+> >   },
+> > });
+> > ```
 
-***
+---
 
 ## Custom User Card
 
 > ![Default](https://i.imgur.com/qfVR5hp.png)
->> ```javascript
->> profileImage('UserID', {
->>   customBadges: [ './booster.png','./orange.png', './giveaway.png' ],
->>   overwriteBadges: false,
->>   usernameColor: '#d9dfef',
->>   borderColor: ['#f90257', '#043a92'],
->>   presenceStatus: 'idle',
->>   squareAvatar: true
->> });
->> ```
+>
+> > ```javascript
+> > profileImage("UserID", {
+> >   customBadges: ["./booster.png", "./orange.png", "./giveaway.png"],
+> >   overwriteBadges: false,
+> >   usernameColor: "#d9dfef",
+> >   borderColor: ["#f90257", "#043a92"],
+> >   presenceStatus: "idle",
+> >   squareAvatar: true,
+> > });
+> > ```
 
-***
+---
 
 ## Custom Bot Card
 
 > ![Default](https://i.imgur.com/naPwX7v.png)
->> ```javascript
->> profileImage('UserID', {
->>   customTag: 'Minecraft Bot',
->>   customBackground: './imgs/axoBackground.png',
->>   customBadges: [ './booster.png','./orange.png'],
->>   usernameColor: '#ffbddf',
->>   borderColor: '#fe6a90',
->>   presenceStatus: 'online',
->>   squareAvatar: true,
->>   badgesFrame: true
->> });
->> ```
+>
+> > ```javascript
+> > profileImage("UserID", {
+> >   customTag: "Minecraft Bot",
+> >   customBackground: "./imgs/axoBackground.png",
+> >   customBadges: ["./booster.png", "./orange.png"],
+> >   usernameColor: "#ffbddf",
+> >   borderColor: "#fe6a90",
+> >   presenceStatus: "online",
+> >   squareAvatar: true,
+> >   badgesFrame: true,
+> > });
+> > ```
 
-***
+---
 
 > # 💥 Issues / Feedback
-> 
+>
 > ### Any problem or feedback, open an issue in our github repository [here](https://github.com/iAsure/discord-arts)
-
 
 > # ⭐ Support
 >
 > ### Send me a msg on discord! [iAsure#0001](https://discord.com/users/339919990947971105)
-
