@@ -214,7 +214,7 @@ async function genTextAndAvatar(data, options) {
   const ctx = canvas.getContext('2d');
 
   const { username, newSize } = parseUsername(
-    rawUsername,
+    discriminator === '0' ? `@${rawUsername}` : rawUsername,
     ctx,
     'Helvetica Bold',
     '80',
@@ -228,7 +228,7 @@ async function genTextAndAvatar(data, options) {
 
   const tag = options?.customTag
     ? isString(options.customTag, 'customTag')
-    : `#${discriminator}`;
+    : discriminator === '0' ? '' : `#${discriminator}`;
 
   ctx.font = `${newSize}px Helvetica Bold`;
   ctx.textAlign = 'left';
