@@ -206,6 +206,7 @@ async function genTextAndAvatar(data, options) {
     createdTimestamp,
     avatarURL,
     defaultAvatarURL,
+    global_name,
   } = data;
 
   const pixelLength = bot ? 470 : 555;
@@ -214,7 +215,7 @@ async function genTextAndAvatar(data, options) {
   const ctx = canvas.getContext('2d');
 
   const { username, newSize } = parseUsername(
-    discriminator === '0' ? `@${rawUsername}` : rawUsername,
+    global_name,
     ctx,
     'Helvetica Bold',
     '80',
@@ -228,7 +229,7 @@ async function genTextAndAvatar(data, options) {
 
   const tag = options?.customTag
     ? isString(options.customTag, 'customTag')
-    : discriminator === '0' ? '' : `#${discriminator}`;
+    : discriminator === '0' ? `@${rawUsername}` : `#${discriminator}`;
 
   ctx.font = `${newSize}px Helvetica Bold`;
   ctx.textAlign = 'left';
