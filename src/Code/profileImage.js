@@ -139,11 +139,37 @@ async function genFrame(data, options) {
   ctx.fill();
   ctx.globalAlpha = 1;
 
-  const badgesLength =
+  let badgesLength =
     (options?.overwriteBadges && options?.customBadges?.length
       ? 0
       : data.public_flags_array.length) +
     (options?.customBadges?.length ? options?.customBadges?.length : 0);
+
+  console.log(`options?.overwriteBadges ${options?.overwriteBadges}`)
+  console.log(`options?.customBadges ${options?.customBadges}`)
+  console.log(`data.public_flags_array ${data.public_flags_array}`)
+
+  if (data.bot) {
+    let bd = await fetch(`https://discord.com/api/v10/applications/${data.id}/rpc`);
+    let dbJson = await bd.json();
+
+    let flagsBot = dbJson.flags;
+
+    const gateways = {
+      APPLICATION_COMMAND_BADGE: 1 << 23,
+      AUTOMOD_RULE_CREATE_BADGE: 1 << 6
+    };
+
+    const arrayFlags = [];
+    for (let i in gateways) {
+      const bit = gateways[i];
+      if ((flagsBot & bit) === bit) arrayFlags.push(i);
+    }
+
+    badgesLength = badgesLength + arrayFlags.length;
+
+    if(data.public_flags_array.includes('VERIFIED_BOT')) badgesLength--
+  }
 
   if (options?.badgesFrame && badgesLength > 0 && !options?.removeBadges) {
     ctx.fillStyle = '#000';
@@ -351,6 +377,7 @@ async function genBadges(data, options) {
 
     const gateways = {
       APPLICATION_COMMAND_BADGE: 1 << 23,
+      AUTOMOD_RULE_CREATE_BADGE: 1 << 6
     };
 
     const arrayFlags = [];
@@ -368,6 +395,12 @@ async function genBadges(data, options) {
         Buffer.from(otherBadges.SLASHBOT, 'base64')
       );
       badges.push({ canvas: slashBadge, x: 0, y: 15, w: 60 });
+    }
+    if (arrayFlags.includes('AUTOMOD_RULE_CREATE_BADGE')) {
+      const automodbot = await loadImage(
+        Buffer.from(otherBadges.AUTOMODBOT, 'base64')
+      );
+      badges.push({ canvas: automodbot, x: 0, y: 15, w: 60 });
     }
 
     ctx.drawImage(botBagde, textLength + 310, 110);
