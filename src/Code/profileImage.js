@@ -169,6 +169,7 @@ async function genFrame(data, options) {
     badgesLength = badgesLength + arrayFlags.length;
 
     if(data.public_flags_array.includes('VERIFIED_BOT')) badgesLength--
+    if(data.public_flags_array.includes('BOT_HTTP_INTERACTIONS')) badgesLength--
   }
 
   if (options?.badgesFrame && badgesLength > 0 && !options?.removeBadges) {
