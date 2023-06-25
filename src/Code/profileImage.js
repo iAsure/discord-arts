@@ -145,10 +145,6 @@ async function genFrame(data, options) {
       : data.public_flags_array.length) +
     (options?.customBadges?.length ? options?.customBadges?.length : 0);
 
-  console.log(`options?.overwriteBadges ${options?.overwriteBadges}`)
-  console.log(`options?.customBadges ${options?.customBadges}`)
-  console.log(`data.public_flags_array ${data.public_flags_array}`)
-
   if (data.bot) {
     let bd = await fetch(`https://discord.com/api/v10/applications/${data.id}/rpc`);
     let dbJson = await bd.json();
