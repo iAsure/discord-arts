@@ -1,105 +1,121 @@
-const { createCanvas, loadImage, GlobalFonts } = require('@napi-rs/canvas');
-const fetch = require('node-fetch');
-const path = require('path');
+const { createCanvas, loadImage } = require('@napi-rs/canvas');
+const fetch = require('node-fetch').default;
 
 const {
   otherImgs,
   otherBadges,
   nitroBadges,
   statusImgs,
-} = require('../../src/Images/profileImage.json');
+} = require('../../public/profile-image.files.json');
 
-const badgesOrder = require('../Utils/badgesOrder.json');
-const { parseUsername } = require('../Utils/imageUtils');
+const badgesOrder = require('../config/badges-order.json');
+const {
+  parseUsername,
+  abbreviateNumber,
+  getDateOrString,
+} = require('../utils/strings.utils');
 const {
   parseImg,
   parseHex,
   parsePng,
   isString,
   isNumber,
-} = require('../Utils/parseData');
-
-GlobalFonts.registerFromPath(
-  `${path.join(__dirname, '..', 'Fonts')}/HelveticaBold.ttf`,
-  `Helvetica Bold`
-);
-GlobalFonts.registerFromPath(
-  `${path.join(__dirname, '..', 'Fonts')}/Helvetica.ttf`,
-  `Helvetica`
-);
+} = require('../utils/validations.utils');
 
 const alphaValue = 0.4;
 
-async function profileImage(user, options) {
-  if (!user || typeof user !== 'string')
-    throw new Error(
-      'Discord Arts | You must add a parameter of String type (UserID)\n\n>> profileImage(\'USER ID\')'
+async function getBadges(data, options) {
+  const { public_flags_array, bot, id } = data;
+
+  const badges = [],
+    flagsUser = public_flags_array.sort(
+      (a, b) => badgesOrder[b] - badgesOrder[a]
     );
 
-  const userRegex = new RegExp(/^([0-9]{17,20})$/);
-  if (!userRegex.test(user)) throw new Error('Discord Arts | Invalid User ID');
-
-  const userData = await fetch(`https://japi.rest/discord/v1/user/${user}`);
-  const { data } = await userData.json();
-
-  const canvas = createCanvas(885, 303);
-  const ctx = canvas.getContext('2d');
-
-  if (options?.removeBorder) ctx.roundRect(9, 9, 867, 285, [26]);
-  else ctx.roundRect(0, 0, 885, 303, [34]);
-  ctx.clip();
-
-  const cardBase = await genBase(data, options);
-  ctx.drawImage(cardBase, 0, 0);
-
-  const cardFrame = await genFrame(data, options);
-  ctx.drawImage(cardFrame, 0, 0);
-
-  const cardTextAndAvatar = await genTextAndAvatar(data, options);
-  const textAvatarShadow = addShadow(cardTextAndAvatar);
-  ctx.drawImage(textAvatarShadow, 0, 0);
-  ctx.drawImage(cardTextAndAvatar, 0, 0);
-
-  if (
-    (typeof options?.borderColor == 'string' && options?.borderColor) ||
-    (typeof options?.borderColor == 'object' && options?.borderColor.length)
-  ) {
-    const border = await genBorder(options);
-    ctx.drawImage(border, 0, 0);
+  if (data.discriminator === '0') {
+    const badge = await loadImage(
+      Buffer.from(otherBadges.NEW_USERNAME, 'base64')
+    );
+    badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
   }
 
-  if (!options?.removeBadges) {
-    const cardBadges = await genBadges(data, options);
-    const badgesShadow = addShadow(cardBadges);
-    ctx.drawImage(badgesShadow, 0, 0);
-    ctx.drawImage(cardBadges, 0, 0);
+  if (bot) {
+    const botFetch = await fetch(
+      `https://discord.com/api/v10/applications/${id}/rpc`
+    );
+
+    const json = await botFetch.json();
+    let flagsBot = json.flags;
+
+    const gateways = {
+      APPLICATION_COMMAND_BADGE: 1 << 23,
+      AUTOMOD_RULE_CREATE_BADGE: 1 << 6,
+    };
+
+    const arrayFlags = [];
+    for (let i in gateways) {
+      const bit = gateways[i];
+      if ((flagsBot & bit) === bit) arrayFlags.push(i);
+    }
+
+    if (arrayFlags.includes('AUTOMOD_RULE_CREATE_BADGE')) {
+      const automodBadge = await loadImage(
+        Buffer.from(otherBadges.AUTOMODBOT, 'base64')
+      );
+      badges.push({ canvas: automodBadge, x: 0, y: 15, w: 60 });
+    }
+    if (arrayFlags.includes('APPLICATION_COMMAND_BADGE')) {
+      const slashBadge = await loadImage(
+        Buffer.from(otherBadges.SLASHBOT, 'base64')
+      );
+      badges.push({ canvas: slashBadge, x: 0, y: 15, w: 60 });
+    }
+  } else {
+    for (let i = 0; i < flagsUser.length; i++) {
+      if (flagsUser[i].startsWith('BOOSTER')) {
+        const badge = await loadImage(
+          Buffer.from(nitroBadges[flagsUser[i]], 'base64')
+        );
+        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
+      } else if (flagsUser[i].startsWith('NITRO')) {
+        const badge = await loadImage(
+          Buffer.from(otherBadges[flagsUser[i]], 'base64')
+        );
+        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
+      } else {
+        const badge = await loadImage(
+          Buffer.from(otherBadges[flagsUser[i]], 'base64')
+        );
+        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
+      }
+    }
   }
 
-  if (options?.rankData) {
-    const xpBar = genXpBar(options);
-    ctx.drawImage(xpBar, 0, 0);
+  if (options?.customBadges?.length) {
+    if (options?.overwriteBadges) {
+      badges = [];
+    }
+
+    for (let i = 0; i < options.customBadges.length; i++) {
+      const canvas = await loadImage(parsePng(options.customBadges[i]));
+      badges.push({ canvas: canvas, x: 10, y: 22, w: 46 });
+    }
   }
 
-  return canvas.toBuffer('image/png');
+  return badges;
 }
 
-module.exports = profileImage;
-
-async function genBase(data, options) {
-  const { bannerURL, avatarURL, defaultAvatarURL } = data;
-
+async function genBase(options, avatarData, bannerData) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
-
-  const newAvatarURL = avatarURL ? avatarURL + '?size=512' : defaultAvatarURL;
 
   const cardBackground = await loadImage(
     options?.customBackground
       ? parseImg(options.customBackground)
-      : bannerURL ?? newAvatarURL
+      : bannerData ?? avatarData
   );
 
-  const condAvatar = options?.customBackground ? true : bannerURL !== null;
+  const condAvatar = options?.customBackground ? true : bannerData !== null;
   const wX = condAvatar ? 885 : 900;
   const wY = condAvatar ? 303 : wX;
   const cY = condAvatar ? 0 : -345;
@@ -109,7 +125,11 @@ async function genBase(data, options) {
   ctx.fillRect(0, 0, 885, 303);
   ctx.fill();
 
-  ctx.filter = 'blur(3px)';
+  ctx.filter =
+    (options?.moreBackgroundBlur ? 'blur(9px)' : 'blur(3px)') +
+    (options?.backgroundBrightness
+      ? ` brightness(${options.backgroundBrightness + 100}%)`
+      : '');
   ctx.drawImage(cardBackground, 0, cY, wX, wY);
 
   ctx.globalAlpha = 0.2;
@@ -121,7 +141,7 @@ async function genBase(data, options) {
   return canvas;
 }
 
-async function genFrame(data, options) {
+async function genFrame(badgesLength, options) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
@@ -138,12 +158,6 @@ async function genFrame(data, options) {
   ctx.roundRect(696, 248, 165, 33, [12]);
   ctx.fill();
   ctx.globalAlpha = 1;
-
-  const badgesLength =
-    (options?.overwriteBadges && options?.customBadges?.length
-      ? 0
-      : data.public_flags_array.length) +
-    (options?.customBadges?.length ? options?.customBadges?.length : 0);
 
   if (options?.badgesFrame && badgesLength > 0 && !options?.removeBadges) {
     ctx.fillStyle = '#000';
@@ -198,14 +212,13 @@ async function genBorder(options) {
   return canvas;
 }
 
-async function genTextAndAvatar(data, options) {
+async function genTextAndAvatar(data, options, avatarData) {
   const {
+    global_name,
     username: rawUsername,
     discriminator,
     bot,
     createdTimestamp,
-    avatarURL,
-    defaultAvatarURL,
   } = data;
 
   const pixelLength = bot ? 470 : 555;
@@ -213,21 +226,25 @@ async function genTextAndAvatar(data, options) {
   let canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
+  const fixedUsername = global_name || rawUsername;
+
   const { username, newSize } = parseUsername(
-    rawUsername,
+    fixedUsername,
     ctx,
     'Helvetica Bold',
     '80',
     pixelLength
   );
 
-  const createdDateString = new Date(+createdTimestamp).toLocaleDateString(
-    'en',
-    { month: 'short', day: 'numeric', year: 'numeric' }
+  const createdDateString = getDateOrString(
+    options?.customDate,
+    createdTimestamp
   );
 
   const tag = options?.customTag
     ? isString(options.customTag, 'customTag')
+    : discriminator === '0'
+    ? `@${data.username}`
     : `#${discriminator}`;
 
   ctx.font = `${newSize}px Helvetica Bold`;
@@ -248,9 +265,7 @@ async function genTextAndAvatar(data, options) {
   ctx.fillStyle = '#dadada';
   ctx.fillText(createdDateString, 775, 273);
 
-  const newAvatarURL = avatarURL ? avatarURL + '?size=512' : defaultAvatarURL;
-
-  const cardAvatar = await loadImage(newAvatarURL);
+  const cardAvatar = await loadImage(avatarData);
 
   const roundValue = options?.squareAvatar ? 30 : 225;
 
@@ -319,89 +334,9 @@ async function genStatus(canvasToEdit, options) {
   return canvas;
 }
 
-async function genBadges(data, options) {
-  const { public_flags_array, bot, username: rawUsername, id } = data;
-
+async function genBadges(badges) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
-
-  const pixelLength = bot ? 470 : 555;
-
-  const { textLength } = parseUsername(
-    rawUsername,
-    ctx,
-    'Helvetica Bold',
-    '80',
-    pixelLength
-  );
-
-  let badges = [],
-    flagsUser = public_flags_array.sort(
-      (a, b) => badgesOrder[b] - badgesOrder[a]
-    );
-  let botBagde;
-
-  if (bot) {
-    const botFetch = await fetch(
-      `https://discord.com/api/v10/applications/${id}/rpc`
-    );
-
-    const json = await botFetch.json();
-    let flagsBot = json.flags;
-
-    const gateways = {
-      APPLICATION_COMMAND_BADGE: 1 << 23,
-    };
-
-    const arrayFlags = [];
-    for (let i in gateways) {
-      const bit = gateways[i];
-      if ((flagsBot & bit) === bit) arrayFlags.push(i);
-    }
-
-    const botVerifBadge =
-      otherImgs[flagsUser.includes('VERIFIED_BOT') ? 'botVerif' : 'botNoVerif'];
-    botBagde = await loadImage(Buffer.from(botVerifBadge, 'base64'));
-
-    if (arrayFlags.includes('APPLICATION_COMMAND_BADGE')) {
-      const slashBadge = await loadImage(
-        Buffer.from(otherBadges.SLASHBOT, 'base64')
-      );
-      badges.push({ canvas: slashBadge, x: 0, y: 15, w: 60 });
-    }
-
-    ctx.drawImage(botBagde, textLength + 310, 110);
-  } else {
-    for (let i = 0; i < flagsUser.length; i++) {
-      if (flagsUser[i].startsWith('BOOSTER')) {
-        const badge = await loadImage(
-          Buffer.from(nitroBadges[flagsUser[i]], 'base64')
-        );
-        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
-      } else if (flagsUser[i].startsWith('NITRO')) {
-        const badge = await loadImage(
-          Buffer.from(otherBadges[flagsUser[i]], 'base64')
-        );
-        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
-      } else {
-        const badge = await loadImage(
-          Buffer.from(otherBadges[flagsUser[i]], 'base64')
-        );
-        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
-      }
-    }
-  }
-
-  if (options?.customBadges?.length) {
-    if (options?.overwriteBadges) {
-      badges = [];
-    }
-
-    for (let i = 0; i < options.customBadges.length; i++) {
-      const canvas = await loadImage(parsePng(options.customBadges[i]));
-      badges.push({ canvas: canvas, x: 10, y: 22, w: 46 });
-    }
-  }
 
   let x = 800;
   badges.forEach(async (badge) => {
@@ -413,8 +348,44 @@ async function genBadges(data, options) {
   return canvas;
 }
 
+async function genBotVerifBadge(data) {
+  const { public_flags_array, username } = data;
+
+  const canvas = createCanvas(885, 303);
+  const ctx = canvas.getContext('2d');
+
+  const { textLength } = parseUsername(
+    username,
+    ctx,
+    'Helvetica Bold',
+    '80',
+    470
+  );
+
+  const flagsUser = public_flags_array.sort(
+    (a, b) => badgesOrder[b] - badgesOrder[a]
+  );
+  let botBagde;
+  const botVerifBadge =
+    otherImgs[flagsUser.includes('VERIFIED_BOT') ? 'botVerif' : 'botNoVerif'];
+  botBagde = await loadImage(Buffer.from(botVerifBadge, 'base64'));
+
+  ctx.drawImage(botBagde, textLength + 310, 110);
+
+  return canvas;
+}
+
 function genXpBar(options) {
-  const { currentXp, requiredXp, level, rank, barColor } = options.rankData;
+  const {
+    currentXp,
+    requiredXp,
+    level,
+    rank,
+    barColor,
+    levelColor,
+    autoColorRank,
+    brighterBar,
+  } = options.rankData;
 
   if (isNaN(currentXp) || isNaN(requiredXp) || isNaN(level)) {
     throw new Error(
@@ -434,20 +405,52 @@ function genXpBar(options) {
   ctx.fill();
   ctx.globalAlpha = 1;
 
-  const rankString = !isNaN(rank) ? `#${isNumber(rank, 'rankData:rank')}` : '';
+  const rankString = !isNaN(rank)
+    ? `RANK #${abbreviateNumber(isNumber(rank, 'rankData:rank'))}`
+    : '';
   const lvlString = !isNaN(level)
-    ? `Lvl ${isNumber(level, 'rankData:level')}`
+    ? `Lvl ${abbreviateNumber(isNumber(level, 'rankData:level'))}`
     : '';
 
-  ctx.font = '23px Helvetica';
+  ctx.font = '21px Helvetica';
   ctx.textAlign = 'left';
   ctx.fillStyle = '#dadada';
-  ctx.fillText(`${currentXp} / ${requiredXp} XP`, 314, 273);
+  ctx.fillText(
+    `${abbreviateNumber(currentXp)} / ${abbreviateNumber(requiredXp)} XP`,
+    314,
+    273
+  );
 
-  ctx.font = '23px Helvetica';
+  const rankColors = {
+    gold: '#F1C40F',
+    silver: '#a1a4c9',
+    bronze: '#AD8A56',
+    current: '#dadada',
+  };
+
+  const rankMapping = {
+    'RANK #1': rankColors.gold,
+    'RANK #2': rankColors.silver,
+    'RANK #3': rankColors.bronze,
+  };
+
+  if (autoColorRank && rankMapping.hasOwnProperty(rankString)) {
+    rankColors.current = rankMapping[rankString];
+  }
+
+  ctx.font = 'bold 21px Helvetica';
   ctx.textAlign = 'right';
-  ctx.fillStyle = '#dadada';
-  ctx.fillText(`${rankString}${rankString ? ' ' : ''}${lvlString}`, 674, 273);
+  ctx.fillStyle = rankColors.current;
+  ctx.fillText(
+    `${rankString}`,
+    674 - ctx.measureText(lvlString).width - 10,
+    273
+  );
+
+  ctx.font = 'bold 21px Helvetica';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = levelColor ? parseHex(levelColor) : '#dadada';
+  ctx.fillText(`${lvlString}`, 674, 273);
 
   ctx.globalAlpha = alphaValue;
   ctx.fillStyle = '#000';
@@ -479,3 +482,15 @@ function addShadow(canvasToEdit) {
 
   return canvas;
 }
+
+module.exports = {
+  getBadges,
+  genBase,
+  genFrame,
+  genBorder,
+  genTextAndAvatar,
+  genXpBar,
+  genBadges,
+  genBotVerifBadge,
+  addShadow,
+};

@@ -7,6 +7,8 @@ interface rankOptions {
     level: number;
     rank?: number;
     barColor?: string;
+    levelColor?: string;
+    autoColorRank?: boolean;
 }
 
 interface profileOptions {
@@ -23,6 +25,9 @@ interface profileOptions {
     removeBorder?: boolean;
     presenceStatus?: presenceStatus;
     squareAvatar?: boolean;
+    moreBackgroundBlur?: boolean;
+    backgroundBrightness?: number
+    customDate?: Date | string;
     rankData?: rankOptions;
 }
 

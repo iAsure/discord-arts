@@ -1,6 +1,6 @@
 
 <div align='center'>
-  <img src='https://i.imgur.com/NBpsl5W.png' alt='Discord Arts Banner' />
+  <img src='https://i.imgur.com/o3jM8MJ.png' alt='Discord-Arts Banner' />
   <p align='center'>
   <a href='https://www.npmjs.com/package/discord-arts'>
     <img src='https://img.shields.io/npm/v/discord-arts?label=version&style=for-the-badge' alt='version' />
@@ -56,7 +56,16 @@ profileImage(userId, {
     level: number, // Current user level
     rank?: number, // Position on the leaderboard
     barColor?: string, // HEX XP bar color
+
+    // === Options added by Cannicide#2753 ===
+    levelColor?: string, // HEX color of LVL text
+    autoColorRank?: boolean, // Whether to color ranks as medal colors for 1st, 2nd, 3rd
   }
+
+  // === Options added by Cannicide#2753 ===
+  moreBackgroundBlur?: boolean, // Triples blur of background image
+  backgroundBrightness?: number, // Set brightness of background from 1-100%
+  customDate?: Date || string, // Custom date or text to use instead of when user joined Discord
 })
 ```
 
@@ -75,6 +84,7 @@ const user = interaction.options.getUser('user-option');
 
 const buffer = await profileImage(user.id, {
   customTag: 'Admin',
+  squareAvatar: true,
   ...imgOptions
 });
 
@@ -88,28 +98,31 @@ interaction.followUp({ files: [attachment] });
 
 ## Default Card
 
-> ![Default](https://i.imgur.com/xV77f9g.png)
+> ![Default](https://i.imgur.com/wlwwOKC.png)
 >> ```javascript
->> profileImage('ID')
+>> profileImage('UserID')
 >> ```
 
 ***
 
 ## Rank Card
 
-> ![Default](https://i.imgur.com/gLA4M7k.png)
+> ![Default](https://i.imgur.com/kAnLkWh.png)
 >> ```javascript
 >> profileImage('UserID', {
 >>   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
 >>   borderColor: '#087996',
 >>   presenceStatus: 'dnd',
 >>   badgesFrame: true,
+>>   customDate: 'AWESOME!',
 >>   rankData: {
 >>     currentXp: 2100,
 >>     requiredXp: 3000,
->>     rank: 10,
+>>     rank: 1,
 >>     level: 20,
->>     barColor: '0b7b95'
+>>     barColor: '0b7b95',
+>>     levelColor: '00d7ff',
+>>     autoColorRank: true
 >>   }
 >> });
 >> ```
