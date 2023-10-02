@@ -98,7 +98,7 @@ interaction.followUp({ files: [attachment] });
 
 ## Default Card
 
-> ![Default](https://i.imgur.com/wlwwOKC.png)
+> ![Default](https://i.imgur.com/IlTioY4.png)
 >> ```javascript
 >> profileImage('UserID')
 >> ```
@@ -107,14 +107,16 @@ interaction.followUp({ files: [attachment] });
 
 ## Rank Card
 
-> ![Default](https://i.imgur.com/kAnLkWh.png)
+> ![Default](https://i.imgur.com/30qVLRx.png)
 >> ```javascript
 >> profileImage('UserID', {
 >>   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
 >>   borderColor: '#087996',
->>   presenceStatus: 'dnd',
+>>   presenceStatus: 'phone',
 >>   badgesFrame: true,
 >>   customDate: 'AWESOME!',
+>>   moreBackgroundBlur: true,
+>>   backgroundBrightness: 100,
 >>   rankData: {
 >>     currentXp: 2100,
 >>     requiredXp: 3000,
@@ -131,15 +133,13 @@ interaction.followUp({ files: [attachment] });
 
 ## Custom User Card
 
-> ![Default](https://i.imgur.com/qfVR5hp.png)
+> ![Default](https://i.imgur.com/xnRXSaS.png)
 >> ```javascript
 >> profileImage('UserID', {
->>   customBadges: [ './booster.png','./orange.png', './giveaway.png' ],
->>   overwriteBadges: false,
->>   usernameColor: '#d9dfef',
->>   borderColor: ['#f90257', '#043a92'],
+>>   borderColor: ['#0000ff', '#00fe5a'],
 >>   presenceStatus: 'idle',
 >>   squareAvatar: true
+>>   badgesFrame: true,
 >> });
 >> ```
 
@@ -147,16 +147,12 @@ interaction.followUp({ files: [attachment] });
 
 ## Custom Bot Card
 
-> ![Default](https://i.imgur.com/naPwX7v.png)
+> ![Default](https://i.imgur.com/crv9akL.png)
 >> ```javascript
 >> profileImage('UserID', {
->>   customTag: 'Minecraft Bot',
->>   customBackground: './imgs/axoBackground.png',
->>   customBadges: [ './booster.png','./orange.png'],
->>   usernameColor: '#ffbddf',
->>   borderColor: '#fe6a90',
+>>   customBackground: 'https://i.imgur.com/LWcWzlc.png',
+>>   borderColor: '#ec8686',
 >>   presenceStatus: 'online',
->>   squareAvatar: true,
 >>   badgesFrame: true
 >> });
 >> ```

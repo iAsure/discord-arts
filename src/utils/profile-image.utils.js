@@ -160,18 +160,16 @@ async function genFrame(badges, options) {
   ctx.globalAlpha = 1;
 
   const badgesLength = badges.length;
-  const badgesWidth = badges.map(b => b.w).reduce((a, b) => a + b);
-  console.log(badgesWidth);
 
   if (options?.badgesFrame && badgesLength > 0 && !options?.removeBadges) {
     ctx.fillStyle = '#000';
     ctx.globalAlpha = alphaValue;
     ctx.beginPath();
     ctx.roundRect(
-      800 - badgesWidth,
+      857 - (badgesLength * 59),
       15,
-      60 * badgesLength + 8,
-      60,
+      (59 * badgesLength) + 8,
+      61,
       [17]
     );
     ctx.fill();

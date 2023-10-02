@@ -11,8 +11,15 @@ async function profileImage(user, options) {
   const userRegex = new RegExp(/^([0-9]{17,20})$/);
   if (!userRegex.test(user)) throw new Error('Discord Arts | Invalid User ID');
 
-  const userData = await fetch(`https://japi.rest/discord/v1/user/${user}`);
-  const { data } = await userData.json();
+  let data;
+
+  try {
+    const userData = await fetch(`https://japi.rest/discord/v1/user/${user}`);
+    const json = await userData.json();
+    data = json.data;
+  } catch (error) {
+    throw new Error(`Discord Arts | Error fetching user data (${user})`)
+  }
 
   return genPng(data, options)
 }

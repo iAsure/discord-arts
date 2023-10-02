@@ -29,8 +29,6 @@ async function genPng(data, options) {
   const userAvatar = (data.avatarURL ?? data.defaultAvatarURL) + '?size=512';
   const badges = await getBadges(data, options);
 
-  console.log(badges);
-
   if (options?.removeBorder) ctx.roundRect(9, 9, 867, 285, [26]);
   else ctx.roundRect(0, 0, 885, 303, [34]);
   ctx.clip();
