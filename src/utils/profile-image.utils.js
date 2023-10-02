@@ -159,6 +159,38 @@ async function genFrame(badgesLength, options) {
   ctx.fill();
   ctx.globalAlpha = 1;
 
+<<<<<<< HEAD:src/utils/profile-image.utils.js
+=======
+  let badgesLength =
+    (options?.overwriteBadges && options?.customBadges?.length
+      ? 0
+      : data.public_flags_array.length) +
+    (options?.customBadges?.length ? options?.customBadges?.length : 0);
+
+  if (data.bot) {
+    let bd = await fetch(`https://discord.com/api/v10/applications/${data.id}/rpc`);
+    let dbJson = await bd.json();
+
+    let flagsBot = dbJson.flags;
+
+    const gateways = {
+      APPLICATION_COMMAND_BADGE: 1 << 23,
+      AUTOMOD_RULE_CREATE_BADGE: 1 << 6
+    };
+
+    const arrayFlags = [];
+    for (let i in gateways) {
+      const bit = gateways[i];
+      if ((flagsBot & bit) === bit) arrayFlags.push(i);
+    }
+
+    badgesLength = badgesLength + arrayFlags.length;
+
+    if(data.public_flags_array.includes('VERIFIED_BOT')) badgesLength--
+    if(data.public_flags_array.includes('BOT_HTTP_INTERACTIONS')) badgesLength--
+  }
+
+>>>>>>> 227cc021d82c518d639503b12a189e59e7f4e72c:src/Code/profileImage.js
   if (options?.badgesFrame && badgesLength > 0 && !options?.removeBadges) {
     ctx.fillStyle = '#000';
     ctx.globalAlpha = alphaValue;
@@ -338,6 +370,94 @@ async function genBadges(badges) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
+<<<<<<< HEAD:src/utils/profile-image.utils.js
+=======
+  const pixelLength = bot ? 470 : 555;
+
+  const { textLength } = parseUsername(
+    rawUsername,
+    ctx,
+    'Helvetica Bold',
+    '80',
+    pixelLength
+  );
+
+  let badges = [],
+    flagsUser = public_flags_array.sort(
+      (a, b) => badgesOrder[b] - badgesOrder[a]
+    );
+  let botBagde;
+
+  if (bot) {
+    const botFetch = await fetch(
+      `https://discord.com/api/v10/applications/${id}/rpc`
+    );
+
+    const json = await botFetch.json();
+    let flagsBot = json.flags;
+
+    const gateways = {
+      APPLICATION_COMMAND_BADGE: 1 << 23,
+      AUTOMOD_RULE_CREATE_BADGE: 1 << 6
+    };
+
+    const arrayFlags = [];
+    for (let i in gateways) {
+      const bit = gateways[i];
+      if ((flagsBot & bit) === bit) arrayFlags.push(i);
+    }
+
+    const botVerifBadge =
+      otherImgs[flagsUser.includes('VERIFIED_BOT') ? 'botVerif' : 'botNoVerif'];
+    botBagde = await loadImage(Buffer.from(botVerifBadge, 'base64'));
+
+    if (arrayFlags.includes('APPLICATION_COMMAND_BADGE')) {
+      const slashBadge = await loadImage(
+        Buffer.from(otherBadges.SLASHBOT, 'base64')
+      );
+      badges.push({ canvas: slashBadge, x: 0, y: 15, w: 60 });
+    }
+    if (arrayFlags.includes('AUTOMOD_RULE_CREATE_BADGE')) {
+      const automodbot = await loadImage(
+        Buffer.from(otherBadges.AUTOMODBOT, 'base64')
+      );
+      badges.push({ canvas: automodbot, x: 0, y: 15, w: 60 });
+    }
+
+    ctx.drawImage(botBagde, textLength + 310, 110);
+  } else {
+    for (let i = 0; i < flagsUser.length; i++) {
+      if (flagsUser[i].startsWith('BOOSTER')) {
+        const badge = await loadImage(
+          Buffer.from(nitroBadges[flagsUser[i]], 'base64')
+        );
+        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
+      } else if (flagsUser[i].startsWith('NITRO')) {
+        const badge = await loadImage(
+          Buffer.from(otherBadges[flagsUser[i]], 'base64')
+        );
+        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
+      } else {
+        const badge = await loadImage(
+          Buffer.from(otherBadges[flagsUser[i]], 'base64')
+        );
+        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
+      }
+    }
+  }
+
+  if (options?.customBadges?.length) {
+    if (options?.overwriteBadges) {
+      badges = [];
+    }
+
+    for (let i = 0; i < options.customBadges.length; i++) {
+      const canvas = await loadImage(parsePng(options.customBadges[i]));
+      badges.push({ canvas: canvas, x: 10, y: 22, w: 46 });
+    }
+  }
+
+>>>>>>> 227cc021d82c518d639503b12a189e59e7f4e72c:src/Code/profileImage.js
   let x = 800;
   badges.forEach(async (badge) => {
     const { canvas, x: bX, y, w } = badge;
