@@ -129,13 +129,12 @@ interaction.followUp({ files: [attachment] });
 
 ## Custom User Card
 
-> ![Default](https://i.imgur.com/xnRXSaS.png)
+> ![Default](https://i.imgur.com/WNH9nuy.png)
 > ```javascript
 > profileImage('UserID', {
 >   borderColor: ['#0000ff', '#00fe5a'],
 >   presenceStatus: 'idle',
 >   squareAvatar: true
->   badgesFrame: true,
 > });
 > ```
 
