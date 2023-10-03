@@ -33,8 +33,13 @@ npm i discord-arts@latest
 
 ## 🪄 profileImage(userId, imgOptions?)
 > ![Default](https://i.imgur.com/IlTioY4.png)
-
-*Generates the card of a user/bot, with its badges.*
+> *Card of a USER / BOT, with its badges and more custom options.*
+> 
+> #### Returns: **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<**[Buffer](https://nodejs.org/api/buffer.html)**>**
+> 
+> <blockquote>
+<details>
+<summary><strong>imgOptions</strong> (Click to show)</summary>
 
 ```js
 profileImage(userId, {
@@ -69,16 +74,10 @@ profileImage(userId, {
   customDate?: Date || string, // Custom date or text to use instead of when user joined Discord
 })
 ```
-
-#### Returns: **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<**[Buffer](https://nodejs.org/api/buffer.html)**>**
-
-
-***
-
-### 🖼️Examples
+</details>
 
 <details>
-  <summary><strong>Code</strong> (Click to show)</summary>
+  <summary><strong>Code examples</strong> (Click to show)</summary>
 <h4>📃 Discord.js v14</h4>
 
 ```javascript
@@ -100,7 +99,7 @@ interaction.followUp({ files: [attachment] });
 </details>
 
 <details>
-  <summary><strong>Images</strong> (Click to show)</summary>
+  <summary><strong>Result images</strong> (Click to show)</summary>
 
 ## Rank Card
 
@@ -154,7 +153,7 @@ interaction.followUp({ files: [attachment] });
 >> });
 >> ```
 </details>
-
+</blockquote>
 
 
 ***
