@@ -32,6 +32,7 @@ npm i discord-arts@latest
 # 🖼️ Cards
 
 ## 🪄 profileImage(userId, imgOptions?)
+> ![Default](https://i.imgur.com/IlTioY4.png)
 
 *Generates the card of a user/bot, with its badges.*
 
@@ -71,9 +72,14 @@ profileImage(userId, {
 
 #### Returns: **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<**[Buffer](https://nodejs.org/api/buffer.html)**>**
 
+
 ***
 
-### 📃 Discord.js v14 Example
+### 🖼️Examples
+
+<details>
+  <summary><strong>Code</strong> (Click to show)</summary>
+#### 📃 Discord.js v14
 
 ```javascript
 const { AttachmentBuilder } = require('discord.js');
@@ -91,19 +97,10 @@ const buffer = await profileImage(user.id, {
 const attachment = new AttachmentBuilder(buffer, { name: 'profile.png' });
 interaction.followUp({ files: [attachment] });
 ```
+</details>
 
-***
-
-### 🖼️Example Results 
-
-## Default Card
-
-> ![Default](https://i.imgur.com/IlTioY4.png)
->> ```javascript
->> profileImage('UserID')
->> ```
-
-***
+<details>
+  <summary><strong>Images</strong> (Click to show)</summary>
 
 ## Rank Card
 
@@ -156,6 +153,9 @@ interaction.followUp({ files: [attachment] });
 >>   badgesFrame: true
 >> });
 >> ```
+</details>
+
+
 
 ***
 
