@@ -104,54 +104,54 @@ interaction.followUp({ files: [attachment] });
 ## Rank Card
 
 > ![Default](https://i.imgur.com/30qVLRx.png)
->> ```javascript
->> profileImage('UserID', {
->>   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
->>   borderColor: '#087996',
->>   presenceStatus: 'phone',
->>   badgesFrame: true,
->>   customDate: 'AWESOME!',
->>   moreBackgroundBlur: true,
->>   backgroundBrightness: 100,
->>   rankData: {
->>     currentXp: 2100,
->>     requiredXp: 3000,
->>     rank: 1,
->>     level: 20,
->>     barColor: '0b7b95',
->>     levelColor: '00d7ff',
->>     autoColorRank: true
->>   }
->> });
->> ```
+> ```javascript
+> profileImage('UserID', {
+>   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
+>   borderColor: '#087996',
+>   presenceStatus: 'phone',
+>   badgesFrame: true,
+>   customDate: 'AWESOME!',
+>   moreBackgroundBlur: true,
+>   backgroundBrightness: 100,
+>   rankData: {
+>     currentXp: 2100,
+>     requiredXp: 3000,
+>     rank: 1,
+>     level: 20,
+>     barColor: '0b7b95',
+>     levelColor: '00d7ff',
+>     autoColorRank: true
+>   }
+> });
+> ```
 
 ***
 
 ## Custom User Card
 
 > ![Default](https://i.imgur.com/xnRXSaS.png)
->> ```javascript
->> profileImage('UserID', {
->>   borderColor: ['#0000ff', '#00fe5a'],
->>   presenceStatus: 'idle',
->>   squareAvatar: true
->>   badgesFrame: true,
->> });
->> ```
+> ```javascript
+> profileImage('UserID', {
+>   borderColor: ['#0000ff', '#00fe5a'],
+>   presenceStatus: 'idle',
+>   squareAvatar: true
+>   badgesFrame: true,
+> });
+> ```
 
 ***
 
 ## Custom Bot Card
 
 > ![Default](https://i.imgur.com/crv9akL.png)
->> ```javascript
->> profileImage('UserID', {
->>   customBackground: 'https://i.imgur.com/LWcWzlc.png',
->>   borderColor: '#ec8686',
->>   presenceStatus: 'online',
->>   badgesFrame: true
->> });
->> ```
+> ```javascript
+> profileImage('UserID', {
+>   customBackground: 'https://i.imgur.com/LWcWzlc.png',
+>   borderColor: '#ec8686',
+>   presenceStatus: 'online',
+>   badgesFrame: true
+> });
+> ```
 </details>
 </blockquote>
 
