@@ -14,7 +14,7 @@ async function profileImage(user, options) {
   let data;
 
   try {
-    const userData = await fetch(`https://japi.rest/discord/v1/user/${user}`);
+    const userData = await fetch(`http://172.93.101.28:8242/user/${user}`);
     const json = await userData.json();
     data = json.data;
   } catch (error) {

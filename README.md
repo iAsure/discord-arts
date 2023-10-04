@@ -32,7 +32,7 @@ npm i discord-arts@latest
 # 🖼️ Cards
 
 ## 🪄 profileImage(userId, imgOptions?)
-> ![Default](https://i.imgur.com/IlTioY4.png)
+> ![Default](https://i.imgur.com/nUGdyoX.png)
 > *Card of a USER / BOT, with its badges and more custom options.*
 > 
 > #### Returns: **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<**[Buffer](https://nodejs.org/api/buffer.html)**>**
@@ -56,6 +56,7 @@ profileImage(userId, {
   borderAllign?: string, // Gradient alignment if 2 colors are used
   presenceStatus?: string, // User status to be displayed below the avatar
   squareAvatar?: boolean, // Change avatar shape to a square
+  removeAvatarFrame?: boolean, // Remove the custom discord frame (if any)
   rankData?: {
     currentXp: number, // Current user XP
     requiredXp: number, // XP required to level up
@@ -103,7 +104,7 @@ interaction.followUp({ files: [attachment] });
 
 ## Rank Card
 
-> ![Default](https://i.imgur.com/30qVLRx.png)
+> ![Default](https://i.imgur.com/8mwNAcO.png)
 > ```javascript
 > profileImage('UserID', {
 >   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
@@ -129,12 +130,12 @@ interaction.followUp({ files: [attachment] });
 
 ## Custom User Card
 
-> ![Default](https://i.imgur.com/WNH9nuy.png)
+> ![Default](https://i.imgur.com/8wB4v2L.png)
 > ```javascript
 > profileImage('UserID', {
 >   borderColor: ['#0000ff', '#00fe5a'],
 >   presenceStatus: 'idle',
->   squareAvatar: true
+>   removeAvatarFrame: false
 > });
 > ```
 
@@ -142,7 +143,7 @@ interaction.followUp({ files: [attachment] });
 
 ## Custom Bot Card
 
-> ![Default](https://i.imgur.com/crv9akL.png)
+> ![Default](https://i.imgur.com/ldKbKvv.png)
 > ```javascript
 > profileImage('UserID', {
 >   customBackground: 'https://i.imgur.com/LWcWzlc.png',

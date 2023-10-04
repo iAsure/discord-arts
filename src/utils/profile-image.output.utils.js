@@ -6,6 +6,7 @@ const {
   genBase,
   genFrame,
   genTextAndAvatar,
+  genAvatarFrame,
   genBorder,
   genBadges,
   genBotVerifBadge,
@@ -69,6 +70,15 @@ async function genPng(data, options) {
   if (options?.rankData) {
     const xpBar = genXpBar(options);
     ctx.drawImage(xpBar, 0, 0);
+  }
+
+  if (
+    !options?.removeAvatarFrame &&
+    data?.avatar_decoration &&
+    !options?.squareAvatar
+  ) {
+    const avatarFrame = await genAvatarFrame(data, options);
+    ctx.drawImage(avatarFrame, 0, 0);
   }
 
   return canvas.toBuffer('image/png');

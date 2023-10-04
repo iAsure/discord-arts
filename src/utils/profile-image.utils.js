@@ -165,13 +165,7 @@ async function genFrame(badges, options) {
     ctx.fillStyle = '#000';
     ctx.globalAlpha = alphaValue;
     ctx.beginPath();
-    ctx.roundRect(
-      857 - (badgesLength * 59),
-      15,
-      (59 * badgesLength) + 8,
-      61,
-      [17]
-    );
+    ctx.roundRect(857 - badgesLength * 59, 15, 59 * badgesLength + 8, 61, [17]);
     ctx.fill();
   }
 
@@ -291,8 +285,48 @@ async function genTextAndAvatar(data, options, avatarData) {
   return canvas;
 }
 
-async function genStatus(canvasToEdit, options) {
+async function genAvatarFrame(data, options) {
+  let canvas = createCanvas(885, 303);
+  const ctx = canvas.getContext('2d');
+
+  const frameHash = data?.avatar_decoration;
+
+  const avatarFrame = await loadImage(
+    `https://cdn.discordapp.com/avatar-decoration-presets/${frameHash}.png`
+  );
+  ctx.drawImage(avatarFrame, 25, 18, 269, 269);
+
+  if (options?.presenceStatus) {
+    canvas = await cutAvatarStatus(canvas, options);
+  }
+
+  return canvas;
+}
+
+async function cutAvatarStatus(canvasToEdit, options) {
   const canvas = createCanvas(885, 303);
+  const ctx = canvas.getContext('2d');
+
+  const cX = options.presenceStatus == 'phone' ? 224.5 : 212;
+  const cY = options.presenceStatus == 'phone' ? 202 : 204;
+
+  ctx.drawImage(canvasToEdit, 0, 0);
+
+  ctx.globalCompositeOperation = 'destination-out';
+
+  if (options.presenceStatus == 'phone')
+    ctx.roundRect(cX - 8, cY - 8, 57, 78, [10]);
+  else ctx.roundRect(212, 204, 62, 62, [62]);
+  ctx.fill();
+
+  ctx.globalCompositeOperation = 'source-over';
+
+  return canvas;
+
+}
+
+async function genStatus(canvasToEdit, options) {
+  let canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
   const validStatus = [
@@ -490,6 +524,7 @@ module.exports = {
   genFrame,
   genBorder,
   genTextAndAvatar,
+  genAvatarFrame,
   genXpBar,
   genBadges,
   genBotVerifBadge,
