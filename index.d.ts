@@ -29,6 +29,7 @@ interface profileOptions {
     moreBackgroundBlur?: boolean;
     backgroundBrightness?: number
     customDate?: Date | string;
+    localDateType?: string;
     removeAvatarFrame?: boolean;
     rankData?: rankOptions;
 }

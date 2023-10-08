@@ -234,7 +234,8 @@ async function genTextAndAvatar(data, options, avatarData) {
 
   const createdDateString = getDateOrString(
     options?.customDate,
-    createdTimestamp
+    createdTimestamp,
+    options?.localDateType
   );
 
   const tag = options?.customTag

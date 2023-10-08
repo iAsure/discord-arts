@@ -90,23 +90,26 @@ function abbreviateNumber(number) {
   return `${getFirstDigitsAsDecimal(numString)}${selectedAbbr}`;
 }
 
-const getDateOrString = (dateInput, createdTimestamp) => {
+const getDateOrString = (dateInput, createdTimestamp, localDateType = 'en') => {
   const dateOptions = {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   };
+  
+  const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
+
   if (typeof dateInput === 'string') {
-    const dateInstance = new Date(dateInput);
-    if (!isNaN(dateInstance.getTime())) {
-      return dateInstance.toLocaleDateString('en', dateOptions);
+    if (iso8601Regex.test(dateInput)) {
+      const dateInstance = new Date(dateInput);
+      return dateInstance.toLocaleDateString(localDateType, dateOptions);
     } else {
       return dateInput;
     }
   } else if (dateInput instanceof Date) {
-    return dateInput.toLocaleDateString('en', dateOptions);
-  } else {
-    return new Date(+createdTimestamp).toLocaleDateString('en', dateOptions);
+    return dateInput.toLocaleDateString(localDateType, dateOptions);
+  } else if (dateInput === undefined || dateInput === null) {
+    return new Date(+createdTimestamp).toLocaleDateString(localDateType, dateOptions);
   }
 };
 

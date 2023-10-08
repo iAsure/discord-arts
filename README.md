@@ -83,6 +83,8 @@ profileImage(userId, {
   moreBackgroundBlur?: boolean, // Triples blur of background image
   backgroundBrightness?: number, // Set brightness of background from 1-100%
   customDate?: Date || string, // Custom date or text to use instead of when user joined Discord
+
+  localDateType?: string, // Local format for the date, e.g. 'en' | 'es' etc.
 })
 ```
 </details>
