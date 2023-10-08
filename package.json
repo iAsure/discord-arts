@@ -1,6 +1,6 @@
 {
   "name": "discord-arts",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Customized cards with Discord style",
   "main": "index.js",
   "types": "index.d.ts",
