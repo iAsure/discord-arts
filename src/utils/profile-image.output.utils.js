@@ -52,7 +52,7 @@ async function genPng(data, options) {
     typeof options?.borderColor === 'undefined'
   ) {
     options.borderColor = data.profile_theme;
-    if (!options.borderAllign) {
+    if (!options?.borderAllign) {
       options.borderAllign = 'vertical';
     }
   }

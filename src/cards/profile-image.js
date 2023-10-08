@@ -3,6 +3,7 @@ const fetch = require('node-fetch').default;
 const { genPng } = require('../utils/profile-image.output.utils')
 
 async function profileImage(user, options) {
+  if (!options) options = {};
   if (!user || typeof user !== 'string')
     throw new Error(
       "Discord Arts | You must add a parameter of String type (UserID)\n\n>> profileImage('USER ID')"
