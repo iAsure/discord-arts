@@ -20,6 +20,7 @@ interface profileOptions {
     tagColor?: string;
     borderColor?: string | string[];
     borderAllign?: borderAllign;
+    disableProfileTheme?: boolean;
     badgesFrame?: boolean;
     removeBadges?: boolean;
     removeBorder?: boolean;

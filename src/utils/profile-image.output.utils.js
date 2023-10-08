@@ -28,13 +28,14 @@ async function genPng(data, options) {
   const ctx = canvas.getContext('2d');
 
   const userAvatar = (data.avatarURL ?? data.defaultAvatarURL) + '?size=512';
+  const userBanner = data.bannerURL ? data.bannerURL + '?size=512' : null;
   const badges = await getBadges(data, options);
 
   if (options?.removeBorder) ctx.roundRect(9, 9, 867, 285, [26]);
   else ctx.roundRect(0, 0, 885, 303, [34]);
   ctx.clip();
 
-  const cardBase = await genBase(options, userAvatar, data.bannerURL);
+  const cardBase = await genBase(options, userAvatar, userBanner);
   ctx.drawImage(cardBase, 0, 0);
 
   const cardFrame = await genFrame(badges, options);
@@ -44,6 +45,17 @@ async function genPng(data, options) {
   const textAvatarShadow = addShadow(cardTextAndAvatar);
   ctx.drawImage(textAvatarShadow, 0, 0);
   ctx.drawImage(cardTextAndAvatar, 0, 0);
+
+  if (
+    !options?.disableProfileTheme &&
+    data.profile_theme &&
+    typeof options?.borderColor === 'undefined'
+  ) {
+    options.borderColor = data.profile_theme;
+    if (!options.borderAllign) {
+      options.borderAllign = 'vertical';
+    }
+  }
 
   if (
     (typeof options?.borderColor === 'string' && options.borderColor) ||

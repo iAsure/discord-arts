@@ -28,11 +28,19 @@ npm i discord-arts@latest
 + 🎨 Simple and beautiful design
 + 🎖️ Easy to use
 + 💎 Beginner friendly
++ ❌ Discord.js not required
+
+# 📌 NEW!!
+
++ 🖼️ Avatar decorations/frames!!
++ 🎴 Automatic profile theme colors!!
++ 🔮 Booster badges are back!!
++ 🛡️ Automod and LegacyUsername badges!!
 
 # 🖼️ Cards
 
 ## 🪄 profileImage(userId, imgOptions?)
-> ![Default](https://i.imgur.com/nUGdyoX.png)
+> ![Default](https://i.imgur.com/TWf8v1G.png)
 > *Card of a USER / BOT, with its badges and more custom options.*
 > 
 > #### Returns: **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<**[Buffer](https://nodejs.org/api/buffer.html)**>**
@@ -54,9 +62,10 @@ profileImage(userId, {
   tagColor?: string, // Tag HEX color
   borderColor?: string | string[], // Border HEX color, can be gradient if 2 colors are used
   borderAllign?: string, // Gradient alignment if 2 colors are used
+  disableProfileTheme?: boolean, // Disable the discord profile theme colors
   presenceStatus?: string, // User status to be displayed below the avatar
   squareAvatar?: boolean, // Change avatar shape to a square
-  removeAvatarFrame?: boolean, // Remove the custom discord frame (if any)
+  removeAvatarFrame?: boolean, // Remove the discord avatar frame/decoration (if any)
   rankData?: {
     currentXp: number, // Current user XP
     requiredXp: number, // XP required to level up
@@ -94,8 +103,7 @@ const buffer = await profileImage(user.id, {
   ...imgOptions
 });
 
-const attachment = new AttachmentBuilder(buffer, { name: 'profile.png' });
-interaction.followUp({ files: [attachment] });
+interaction.followUp({ files: [buffer] });
 ```
 </details>
 
@@ -104,11 +112,10 @@ interaction.followUp({ files: [attachment] });
 
 ## Rank Card
 
-> ![Default](https://i.imgur.com/8mwNAcO.png)
+> ![Default](https://i.imgur.com/Rd6ScN1.png)
 > ```javascript
 > profileImage('UserID', {
->   customBadges: [  './skull.png', './letter.png', './rocket.png', './crown.png', './hearth.png'  ],
->   borderColor: '#087996',
+>   customBadges: [  './skull.png', './rocket.png', './crown.png'  ],
 >   presenceStatus: 'phone',
 >   badgesFrame: true,
 >   customDate: 'AWESOME!',
@@ -119,8 +126,8 @@ interaction.followUp({ files: [attachment] });
 >     requiredXp: 3000,
 >     rank: 1,
 >     level: 20,
->     barColor: '0b7b95',
->     levelColor: '00d7ff',
+>     barColor: '#fcdce1',
+>     levelColor: '#ada8c6',
 >     autoColorRank: true
 >   }
 > });
