@@ -16,7 +16,7 @@ async function profileImage(user, options) {
 
   try {
     // Private and exclusive Discord-Arts API
-    const userData = await fetch(`http://172.93.101.28:8242/user/${user}`);
+    const userData = await fetch(`https://discord-arts.asure.dev/user/${user}`);
     const json = await userData.json();
     data = json.data;
   } catch (error) {
