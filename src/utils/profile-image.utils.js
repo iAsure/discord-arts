@@ -21,6 +21,7 @@ const {
   isString,
   isNumber,
 } = require('../utils/validations.utils');
+const DiscordArtsError = require('./error.utils');
 
 const alphaValue = 0.4;
 
@@ -182,8 +183,8 @@ async function genBorder(options) {
   else borderColors.push(...options.borderColor);
 
   if (borderColors.length > 2)
-    throw new Error(
-      `Discord Arts | Invalid borderColor length (${borderColors.length}) must be a maximum of 2 colors`
+    throw new DiscordArtsError(
+      `Invalid borderColor length (${borderColors.length}) must be a maximum of 2 colors`
     );
 
   const gradX = options.borderAllign == 'vertical' ? 0 : 885;
@@ -341,8 +342,8 @@ async function genStatus(canvasToEdit, options) {
   ];
 
   if (!validStatus.includes(options.presenceStatus))
-    throw new Error(
-      `Discord Arts | Invalid presenceStatus ('${options.presenceStatus}') must be 'online' | 'idle' | 'offline' | 'dnd' | 'invisible' | 'streaming' | 'phone'`
+    throw new DiscordArtsError(
+      `Invalid presenceStatus ('${options.presenceStatus}') must be 'online' | 'idle' | 'offline' | 'dnd' | 'invisible' | 'streaming' | 'phone'`
     );
 
   const statusString =
@@ -424,8 +425,8 @@ function genXpBar(options) {
   } = options.rankData;
 
   if (isNaN(currentXp) || isNaN(requiredXp) || isNaN(level)) {
-    throw new Error(
-      'Discord Arts | rankData options requires: currentXp, requiredXp and level properties'
+    throw new DiscordArtsError(
+      'rankData options requires: currentXp, requiredXp and level properties'
     );
   }
 
