@@ -1,6 +1,6 @@
 const fetch = require('node-fetch').default;
 
-const { genPng } = require('../utils/profile-image.output.utils')
+const { genPng } = require('../utils/profile-image.output.utils');
 
 async function profileImage(user, options) {
   if (!options) options = {};
@@ -9,9 +9,6 @@ async function profileImage(user, options) {
       "Discord Arts | You must add a parameter of String type (UserID)\n\n>> profileImage('USER ID')"
     );
 
-  const userRegex = new RegExp(/^([0-9]{17,21})$/);
-  if (!userRegex.test(user)) throw new Error('Discord Arts | Invalid User ID');
-
   let data;
 
   try {
@@ -19,11 +16,15 @@ async function profileImage(user, options) {
     const userData = await fetch(`https://discord-arts.asure.dev/user/${user}`);
     const json = await userData.json();
     data = json.data;
+
+    if (data.statusCode) {
+      throw new Error(`Discord Arts | ${data.message}`);
+    }
   } catch (error) {
-    throw new Error(`Discord Arts | Error fetching user data (${user})`)
+    throw new Error(`Discord Arts | Error fetching user data (${user})`);
   }
 
-  return genPng(data, options)
+  return genPng(data, options);
 }
 
 module.exports = profileImage;

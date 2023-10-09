@@ -93,7 +93,7 @@ async function getBadges(data, options) {
 
   if (options?.customBadges?.length) {
     if (options?.overwriteBadges) {
-      badges = [];
+      badges.splice(0, badges.length);
     }
 
     for (let i = 0; i < options.customBadges.length; i++) {
