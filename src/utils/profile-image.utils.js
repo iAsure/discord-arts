@@ -24,10 +24,12 @@ const {
 const DiscordArtsError = require('./error.utils');
 
 const alphaValue = 0.4;
+const clydeID = '1081004946872352958';
 
 async function getBadges(data, options) {
   const { public_flags_array, bot, id } = data;
 
+  const isClyde = id === clydeID;
   const badges = [],
     flagsUser = public_flags_array.sort(
       (a, b) => badgesOrder[b] - badgesOrder[a]
@@ -40,7 +42,7 @@ async function getBadges(data, options) {
     badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
   }
 
-  if (bot) {
+  if (bot && !isClyde) {
     const botFetch = await fetch(
       `https://discord.com/api/v10/applications/${id}/rpc`
     );
@@ -216,8 +218,10 @@ async function genTextAndAvatar(data, options, avatarData) {
     discriminator,
     bot,
     createdTimestamp,
+    id,
   } = data;
 
+  const isClyde = id === clydeID;
   const pixelLength = bot ? 470 : 555;
 
   let canvas = createCanvas(885, 303);
@@ -238,6 +242,10 @@ async function genTextAndAvatar(data, options, avatarData) {
     createdTimestamp,
     options?.localDateType
   );
+
+  if (isClyde && !options?.customTag) {
+    options.customTag = '@clyde';
+  }
 
   const tag = options?.customTag
     ? isString(options.customTag, 'customTag')
@@ -324,7 +332,6 @@ async function cutAvatarStatus(canvasToEdit, options) {
   ctx.globalCompositeOperation = 'source-over';
 
   return canvas;
-
 }
 
 async function genStatus(canvasToEdit, options) {
@@ -387,13 +394,17 @@ async function genBadges(badges) {
 }
 
 async function genBotVerifBadge(data) {
-  const { public_flags_array, username } = data;
+  const { public_flags_array, username, global_name, id } = data;
 
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
+  const isClyde = id === clydeID;
+
+  const usernameToParse = isClyde ? global_name : username;
+
   const { textLength } = parseUsername(
-    username,
+    usernameToParse,
     ctx,
     'Helvetica Bold',
     '80',
@@ -403,10 +414,14 @@ async function genBotVerifBadge(data) {
   const flagsUser = public_flags_array.sort(
     (a, b) => badgesOrder[b] - badgesOrder[a]
   );
-  let botBagde;
-  const botVerifBadge =
-    otherImgs[flagsUser.includes('VERIFIED_BOT') ? 'botVerif' : 'botNoVerif'];
-  botBagde = await loadImage(Buffer.from(botVerifBadge, 'base64'));
+  const badgeName = isClyde
+    ? 'botAI'
+    : flagsUser.includes('VERIFIED_BOT')
+    ? 'botVerif'
+    : 'botNoVerif';
+
+  const botBadgeBase64 = otherImgs[badgeName];
+  const botBagde = await loadImage(Buffer.from(botBadgeBase64, 'base64'));
 
   ctx.drawImage(botBagde, textLength + 310, 110);
 

@@ -1,5 +1,5 @@
 function parseUsername(username, ctx, font, size, maxLength) {
-  username = username.replace(/\s/g, '') ? username : '?????'
+  username = username && username.replace(/\s/g, '') ? username : '?????'
   let usernameChars = username.split('');
   let editableUsername = '';
   let finalUsername = '';
