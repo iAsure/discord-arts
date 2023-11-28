@@ -1,4 +1,3 @@
-
 <div align='center'>
   <img src='https://i.imgur.com/o3jM8MJ.png' alt='Discord-Arts Banner' />
   <p align='center'>
@@ -41,6 +40,7 @@ npm i discord-arts@latest
 
 ## 🪄 profileImage(userId, imgOptions?)
 > ![Default](https://i.imgur.com/TWf8v1G.png)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FiAsure%2Fdiscord-arts.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FiAsure%2Fdiscord-arts?ref=badge_shield)
 > 
 > *Card of a USER / BOT, with its badges and more custom options.*
 > 
@@ -177,3 +177,7 @@ interaction.followUp({ files: [buffer] });
 >
 > ### Send me a msg on discord! [iAsure#0001](https://discord.com/users/339919990947971105)
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FiAsure%2Fdiscord-arts.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FiAsure%2Fdiscord-arts?ref=badge_large)
