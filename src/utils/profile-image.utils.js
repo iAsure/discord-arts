@@ -35,7 +35,7 @@ async function getBadges(data, options) {
       (a, b) => badgesOrder[b] - badgesOrder[a]
     );
 
-  if (data.discriminator === '0') {
+  if (data.discriminator === '0' && data.createdTimestamp / 1000 <= 1686614400) { // <---- 1686614400 = June 2023 0:00 AM GMT+000 (Username rollout was completed)
     const badge = await loadImage(
       Buffer.from(otherBadges.NEW_USERNAME, 'base64')
     );
