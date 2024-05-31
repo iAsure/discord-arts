@@ -29,8 +29,6 @@ async function getBadges(data, options) {
   const badges = assets?.badges || [];
   const canvasBadges = [];
 
-  console.log(badges);
-
   for (const badge of badges.reverse()) {
     const { icon } = badge;
     const canvas = await loadImage(icon);
