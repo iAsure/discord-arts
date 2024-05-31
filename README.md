@@ -175,5 +175,5 @@ interaction.followUp({ files: [buffer] });
 
 > # ⭐ Support
 >
-> ### Send me a msg on discord! [iAsure#0001](https://discord.com/users/339919990947971105)
+> ### [> Discord Server <](https://discord.gg/csedxqGQKP)
 
