@@ -1,6 +1,5 @@
 const DiscordArtsError = require("./error.utils");
-const BASE_URL = "http://localhost:3000/v1/user";
-// const BASE_URL = "https://discord-arts.asure.dev/user";
+const BASE_URL = "https://discord-arts.asure.dev/v1/user";
 const fetch = require("node-fetch").default;
 const fs = require("fs");
 const { FetchError } = require("node-fetch");
