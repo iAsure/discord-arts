@@ -1,13 +1,13 @@
 function parseImg(imgString) {
   if(!imgString || typeof imgString !== 'string') {
-    throw new Error(`Discord Arts | Invalid custom badge ('${imgString || undefined}') must be an image file 'png | jpg | gif'`);
+    throw new Error(`Discord Arts | Invalid custom badge ('${imgString || undefined}') must be an image file 'png | jpg | jpeg | gif'`);
   }
   const URL = imgString.split('.')
   const imgType = URL[URL.length - 1]
-  const imgCheck = /(jpg|png|gif)/gi.test(imgType)
+  const imgCheck = /(jpg|jpeg|png|gif)/gi.test(imgType)
 
   if(!imgCheck)
-    throw new Error(`Discord Arts | Invalid customBackground ('${imgString || undefined}') must be an image file 'png | jpg | gif'`);
+    throw new Error(`Discord Arts | Invalid customBackground ('${imgString || undefined}') must be an image file 'png | jpg | jpeg | gif'`);
 
   return imgString
 }

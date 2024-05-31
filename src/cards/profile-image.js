@@ -11,7 +11,16 @@ async function profileImage(userId, options) {
 
   const data = await fetchUserData(userId);
 
-  return genPng(data, options);
+  try {
+    const buffer = await genPng(data, options);
+
+    return buffer;
+  } catch (error) {
+    if (error.message.includes('source rejected')) {
+      throw new DiscordArtsError(`Error loading user assets, try again later`, { userId })
+    }
+    throw new DiscordArtsError(error?.message, { userId })
+  }
 }
 
 module.exports = profileImage;

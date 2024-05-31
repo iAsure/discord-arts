@@ -21,6 +21,7 @@ interface profileOptions {
     borderColor?: string | string[];
     borderAllign?: borderAllign;
     disableProfileTheme?: boolean;
+    disableBackgroundBlur?: boolean;
     badgesFrame?: boolean;
     removeBadges?: boolean;
     removeBorder?: boolean;

@@ -1,14 +1,11 @@
 const { createCanvas, loadImage } = require('@napi-rs/canvas');
-const fetch = require('node-fetch').default;
 
 const {
   otherImgs,
-  otherBadges,
-  nitroBadges,
   statusImgs,
 } = require('../../public/profile-image.files.json');
 
-const badgesOrder = require('../config/badges-order.json');
+// const badgesOrder = require('../config/badges-order.json');
 const {
   parseUsername,
   abbreviateNumber,
@@ -27,98 +24,55 @@ const alphaValue = 0.4;
 const clydeID = '1081004946872352958';
 
 async function getBadges(data, options) {
-  const { public_flags_array, bot, id } = data;
+  const { assets } = data;
 
-  const isClyde = id === clydeID;
-  const badges = [],
-    flagsUser = public_flags_array.sort(
-      (a, b) => badgesOrder[b] - badgesOrder[a]
-    );
+  const badges = assets?.badges || [];
+  const canvasBadges = [];
 
-  if (data.discriminator === '0') {
-    const badge = await loadImage(
-      Buffer.from(otherBadges.NEW_USERNAME, 'base64')
-    );
-    badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
-  }
+  console.log(badges);
 
-  if (bot && !isClyde) {
-    const botFetch = await fetch(
-      `https://discord.com/api/v10/applications/${id}/rpc`
-    );
+  for (const badge of badges.reverse()) {
+    const { icon } = badge;
+    const canvas = await loadImage(icon);
 
-    const json = await botFetch.json();
-    let flagsBot = json.flags;
-
-    const gateways = {
-      APPLICATION_COMMAND_BADGE: 1 << 23,
-      AUTOMOD_RULE_CREATE_BADGE: 1 << 6,
-    };
-
-    const arrayFlags = [];
-    for (let i in gateways) {
-      const bit = gateways[i];
-      if ((flagsBot & bit) === bit) arrayFlags.push(i);
-    }
-
-    if (arrayFlags.includes('AUTOMOD_RULE_CREATE_BADGE')) {
-      const automodBadge = await loadImage(
-        Buffer.from(otherBadges.AUTOMODBOT, 'base64')
-      );
-      badges.push({ canvas: automodBadge, x: 0, y: 15, w: 60 });
-    }
-    if (arrayFlags.includes('APPLICATION_COMMAND_BADGE')) {
-      const slashBadge = await loadImage(
-        Buffer.from(otherBadges.SLASHBOT, 'base64')
-      );
-      badges.push({ canvas: slashBadge, x: 0, y: 15, w: 60 });
-    }
-  } else {
-    for (let i = 0; i < flagsUser.length; i++) {
-      if (flagsUser[i].startsWith('BOOSTER')) {
-        const badge = await loadImage(
-          Buffer.from(nitroBadges[flagsUser[i]], 'base64')
-        );
-        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
-      } else if (flagsUser[i].startsWith('NITRO')) {
-        const badge = await loadImage(
-          Buffer.from(otherBadges[flagsUser[i]], 'base64')
-        );
-        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
-      } else {
-        const badge = await loadImage(
-          Buffer.from(otherBadges[flagsUser[i]], 'base64')
-        );
-        badges.push({ canvas: badge, x: 0, y: 15, w: 60 });
-      }
-    }
+    canvasBadges.push({ canvas, x: 0, y: 15, w: 60 });
   }
 
   if (options?.customBadges?.length) {
     if (options?.overwriteBadges) {
-      badges.splice(0, badges.length);
+      canvasBadges.splice(0, badges.length);
     }
 
     for (let i = 0; i < options.customBadges.length; i++) {
       const canvas = await loadImage(parsePng(options.customBadges[i]));
-      badges.push({ canvas: canvas, x: 10, y: 22, w: 46 });
+      canvasBadges.push({ canvas, x: 10, y: 22, w: 46 });
     }
   }
 
-  return badges;
+  return canvasBadges;
 }
 
 async function genBase(options, avatarData, bannerData) {
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const cardBackground = await loadImage(
+  let isBannerLoaded = true;
+  let cardBackground = await loadImage(
     options?.customBackground
       ? parseImg(options.customBackground)
       : bannerData ?? avatarData
-  );
+  ).catch(() => {});
 
-  const condAvatar = options?.customBackground ? true : bannerData !== null;
+  if (!cardBackground) {
+    cardBackground = await loadImage(avatarData);
+    isBannerLoaded = false;
+  }
+
+  const condAvatar = options?.customBackground
+    ? true
+    : !isBannerLoaded
+    ? false
+    : bannerData !== null;
   const wX = condAvatar ? 885 : 900;
   const wY = condAvatar ? 303 : wX;
   const cY = condAvatar ? 0 : -345;
@@ -129,7 +83,11 @@ async function genBase(options, avatarData, bannerData) {
   ctx.fill();
 
   ctx.filter =
-    (options?.moreBackgroundBlur ? 'blur(9px)' : 'blur(3px)') +
+    (options?.moreBackgroundBlur
+      ? 'blur(9px)'
+      : options?.disableBackgroundBlur
+      ? 'blur(0px)'
+      : 'blur(3px)') +
     (options?.backgroundBrightness
       ? ` brightness(${options.backgroundBrightness + 100}%)`
       : '');
@@ -212,14 +170,15 @@ async function genBorder(options) {
 }
 
 async function genTextAndAvatar(data, options, avatarData) {
+  const { basicInfo } = data;
   const {
-    global_name,
+    globalName,
     username: rawUsername,
     discriminator,
     bot,
     createdTimestamp,
     id,
-  } = data;
+  } = basicInfo;
 
   const isClyde = id === clydeID;
   const pixelLength = bot ? 470 : 555;
@@ -227,7 +186,7 @@ async function genTextAndAvatar(data, options, avatarData) {
   let canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const fixedUsername = global_name || rawUsername;
+  const fixedUsername = globalName || rawUsername;
 
   const { username, newSize } = parseUsername(
     fixedUsername,
@@ -249,8 +208,8 @@ async function genTextAndAvatar(data, options, avatarData) {
 
   const tag = options?.customTag
     ? isString(options.customTag, 'customTag')
-    : discriminator === '0'
-    ? `@${data.username}`
+    : !discriminator
+    ? `@${rawUsername}`
     : `#${discriminator}`;
 
   ctx.font = `${newSize}px Helvetica Bold`;
@@ -299,11 +258,9 @@ async function genAvatarFrame(data, options) {
   let canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const frameHash = data?.avatar_decoration;
+  const frameUrl = data?.decoration?.avatarFrame;
 
-  const avatarFrame = await loadImage(
-    `https://cdn.discordapp.com/avatar-decoration-presets/${frameHash}.png`
-  );
+  const avatarFrame = await loadImage(frameUrl);
   ctx.drawImage(avatarFrame, 25, 18, 269, 269);
 
   if (options?.presenceStatus) {
@@ -394,14 +351,15 @@ async function genBadges(badges) {
 }
 
 async function genBotVerifBadge(data) {
-  const { public_flags_array, username, global_name, id } = data;
+  const { basicInfo } = data;
+  const { username, globalName, id } = basicInfo;
 
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
   const isClyde = id === clydeID;
 
-  const usernameToParse = isClyde ? global_name : username;
+  const usernameToParse = isClyde ? globalName : username;
 
   const { textLength } = parseUsername(
     usernameToParse,
@@ -411,12 +369,9 @@ async function genBotVerifBadge(data) {
     470
   );
 
-  const flagsUser = public_flags_array.sort(
-    (a, b) => badgesOrder[b] - badgesOrder[a]
-  );
   const badgeName = isClyde
     ? 'botAI'
-    : flagsUser.includes('VERIFIED_BOT')
+    : basicInfo?.verified
     ? 'botVerif'
     : 'botNoVerif';
 

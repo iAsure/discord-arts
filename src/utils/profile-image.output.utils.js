@@ -24,11 +24,12 @@ GlobalFonts.registerFromPath(
 );
 
 async function genPng(data, options) {
+  const { basicInfo, assets } = data;
   const canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const userAvatar = (data.avatarURL ?? data.defaultAvatarURL) + '?size=512';
-  const userBanner = data.bannerURL ? data.bannerURL + '?size=512' : null;
+  const userAvatar = (assets.avatarURL ?? assets.defaultAvatarURL) + '?size=512';
+  const userBanner = assets.bannerURL ? assets.bannerURL + '?size=512' : null;
   const badges = await getBadges(data, options);
 
   if (options?.removeBorder) ctx.roundRect(9, 9, 867, 285, [26]);
@@ -48,10 +49,10 @@ async function genPng(data, options) {
 
   if (
     !options?.disableProfileTheme &&
-    data.profile_theme &&
+    data?.decoration?.profileColors &&
     typeof options?.borderColor === 'undefined'
   ) {
-    options.borderColor = data.profile_theme;
+    options.borderColor = data?.decoration?.profileColors;
     if (!options?.borderAllign) {
       options.borderAllign = 'vertical';
     }
@@ -65,7 +66,7 @@ async function genPng(data, options) {
     ctx.drawImage(border, 0, 0);
   }
 
-  if (data.bot) {
+  if (basicInfo?.bot) {
     const botVerifBadge = await genBotVerifBadge(data);
     const shadowVerifBadge = addShadow(botVerifBadge);
     ctx.drawImage(shadowVerifBadge, 0, 0);
@@ -86,7 +87,7 @@ async function genPng(data, options) {
 
   if (
     !options?.removeAvatarFrame &&
-    data?.avatar_decoration &&
+    data?.decoration?.avatarFrame &&
     !options?.squareAvatar
   ) {
     const avatarFrame = await genAvatarFrame(data, options);
