@@ -1,6 +1,6 @@
 
 <div align='center'>
-  <img src='https://i.imgur.com/o3jM8MJ.png' alt='Discord-Arts Banner' />
+  <img src='https://i.imgur.com/VBVAWrM.png' alt='Discord-Arts Banner' />
   <p align='center'>
   <a href='https://www.npmjs.com/package/discord-arts'>
     <img src='https://img.shields.io/npm/v/discord-arts?label=version&style=for-the-badge' alt='version' />
