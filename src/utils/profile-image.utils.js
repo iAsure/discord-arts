@@ -194,6 +194,20 @@ async function genTextAndAvatar(data, options, avatarData) {
     pixelLength
   );
 
+  if (options?.subtitle) {
+    ctx.globalAlpha = alphaValue;
+    ctx.fillStyle = '#2a2d33';
+    ctx.beginPath();
+    ctx.roundRect(304, 248, 380, 33, [12]);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    ctx.font = '20px Helvetica';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = options?.color ? options.color : '#dadada';
+    ctx.fillText(`${options?.subtitle}`, 314, 273);
+  }
+
   const createdDateString = getDateOrString(
     options?.customDate,
     createdTimestamp,
