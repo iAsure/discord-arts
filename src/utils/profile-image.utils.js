@@ -202,7 +202,7 @@ async function genTextAndAvatar(data, options, avatarData) {
     ctx.fill();
     ctx.globalAlpha = 1;
 
-    ctx.font = '20px Helvetica';
+    ctx.font = '23px Helvetica';
     ctx.textAlign = 'left';
     ctx.fillStyle = options?.color ? options.color : '#dadada';
     ctx.fillText(`${options?.subtitle}`, 314, 273);
