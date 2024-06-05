@@ -13,7 +13,7 @@ interface rankOptions {
 
 interface profileOptions {
     customTag?: string;
-    subtitle?: string;
+    customSubtitle?: string;
     customBadges?: string[];
     customBackground?: string;
     overwriteBadges?: boolean;

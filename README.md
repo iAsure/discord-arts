@@ -53,7 +53,7 @@ npm i discord-arts@latest
 ```js
 profileImage(userId, {
   customTag?: string, // Text below the user
-  subtitle?: string, // Text below the custom tag
+  customSubtitle?: string, // Text below the custom tag
   customBadges?: string[], // Your own png badges (path and URL) (46x46)
   customBackground?: string, // Change the background to any image (path and URL) (885x303)
   overwriteBadges?: boolean, // Merge your badges with the discord defaults

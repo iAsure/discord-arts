@@ -194,7 +194,7 @@ async function genTextAndAvatar(data, options, avatarData) {
     pixelLength
   );
 
-  if (options?.subtitle && !options.rankData) {
+  if (options?.customSubtitle && !options.rankData) {
     ctx.globalAlpha = alphaValue;
     ctx.fillStyle = '#2a2d33';
     ctx.beginPath();
@@ -205,7 +205,7 @@ async function genTextAndAvatar(data, options, avatarData) {
     ctx.font = '23px Helvetica';
     ctx.textAlign = 'left';
     ctx.fillStyle = options?.color ? options.color : '#dadada';
-    ctx.fillText(`${options?.subtitle}`, 314, 273);
+    ctx.fillText(`${options?.customSubtitle}`, 314, 273);
   }
 
   const createdDateString = getDateOrString(
