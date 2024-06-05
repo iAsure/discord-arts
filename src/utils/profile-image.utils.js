@@ -194,7 +194,7 @@ async function genTextAndAvatar(data, options, avatarData) {
     pixelLength
   );
 
-  if (options?.subtitle) {
+  if (options?.subtitle && !options.rankData) {
     ctx.globalAlpha = alphaValue;
     ctx.fillStyle = '#2a2d33';
     ctx.beginPath();
