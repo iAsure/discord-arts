@@ -12,6 +12,7 @@ interface rankOptions {
 }
 
 interface profileOptions {
+    customUsername?: string;
     customTag?: string;
     customSubtitle?: string;
     customBadges?: string[];

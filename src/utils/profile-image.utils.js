@@ -184,7 +184,7 @@ async function genTextAndAvatar(data, options, avatarData) {
   let canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const fixedUsername = globalName || rawUsername;
+  const fixedUsername = options?.customUsername || globalName || rawUsername;
 
   const { username, newSize } = parseUsername(
     fixedUsername,
