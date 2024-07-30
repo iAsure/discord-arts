@@ -199,7 +199,7 @@ async function genTextAndAvatar(data, options, avatarData) {
   let canvas = createCanvas(885, 303);
   const ctx = canvas.getContext('2d');
 
-  const fixedUsername = globalName || rawUsername;
+  const fixedUsername = options?.customUsername || globalName || rawUsername;
 
   const { username, newSize } = parseUsername(
     fixedUsername,
@@ -208,6 +208,20 @@ async function genTextAndAvatar(data, options, avatarData) {
     '80',
     pixelLength
   );
+
+  if (options?.customSubtitle && !options.rankData) {
+    ctx.globalAlpha = alphaValue;
+    ctx.fillStyle = '#2a2d33';
+    ctx.beginPath();
+    ctx.roundRect(304, 248, 380, 33, [12]);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    ctx.font = '23px Helvetica';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = options?.color ? options.color : '#dadada';
+    ctx.fillText(`${options?.customSubtitle}`, 314, 273);
+  }
 
   const createdDateString = getDateOrString(
     options?.customDate,
