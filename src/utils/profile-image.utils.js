@@ -502,6 +502,11 @@ function genXpBar(options) {
     barColors.push(barColor);
   else barColors.push(...barColor);
 
+  if (barColors.length > 20)
+    throw new DiscordArtsError(
+      `Invalid barColor length (${barColors.length}) must be a maximum of 20 colors`
+    );
+
   const barWidth = Math.round((currentXp * 556) / requiredXp)
 
   const grd = ctx.createLinearGradient(304, 197, 860, 197);
