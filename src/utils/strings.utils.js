@@ -107,4 +107,16 @@ const getDateOrString = (dateInput, createdTimestamp, localDateType = 'en') => {
   }
 };
 
-module.exports = { parseUsername, abbreviateNumber, getDateOrString };
+function truncateText(text, limit = 25, fromEnd = false) {
+  if (text.length > limit) {
+    if (fromEnd) {
+      return "..." + text.slice(-limit);
+    } else {
+      return text.slice(0, limit) + "...";
+    }
+  } else {
+    return text;
+  }
+}
+
+module.exports = { parseUsername, abbreviateNumber, getDateOrString, truncateText };

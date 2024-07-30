@@ -6,7 +6,7 @@ async function profileImage(userId, options) {
   if (!options) options = {};
   if (!userId || typeof userId !== 'string')
     throw new DiscordArtsError(
-      "You must add a parameter of String type (UserID)\n\n>> profileImage('UserID')"
+      `TypeError: Invalid argument for profileImage()\nExpected string userId, got ${typeof userId === 'undefined' || !userId ? 'undefined' : typeof userId}`
     );
 
   const data = await fetchUserData(userId);
@@ -17,9 +17,9 @@ async function profileImage(userId, options) {
     return buffer;
   } catch (error) {
     if (error.message.includes('source rejected')) {
-      throw new DiscordArtsError(`Error loading user assets, try again later`, { userId })
+      throw new DiscordArtsError(`Error loading user assets, try again later`)
     }
-    throw new DiscordArtsError(error?.message, { userId })
+    throw new DiscordArtsError(error?.message)
   }
 }
 

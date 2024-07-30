@@ -1,8 +1,6 @@
 class DiscordArtsError extends Error {
-  constructor(message, info) {
-    const { userId, packageVersion } = info;
+  constructor(message) {
     super(message);
-    this.userId = userId;
   }
 }
 

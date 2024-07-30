@@ -10,8 +10,6 @@ async function fetchUserData(userId) {
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
   const version = packageJson.version;
 
-  const errorInfo = { userId };
-
   try {
     const response = await fetch(`${BASE_URL}/${userId}`, {
       headers: {
@@ -23,34 +21,30 @@ async function fetchUserData(userId) {
     if (!contentType?.includes("application/json")) {
       if (contentType?.includes("text/html")) {
         throw new DiscordArtsError(
-          "API is currently down, try again later",
-          errorInfo
+          "API is currently down, try again later"
         );
       } else {
         throw new DiscordArtsError(
           "Invalid response format. Expected JSON, but received: " +
-            contentType,
-          errorInfo
+          contentType,
         );
       }
     }
 
     const json = await response.json();
     if (json.error || !response.ok) {
-      throw new DiscordArtsError(json?.message, errorInfo);
+      throw new DiscordArtsError(json?.message);
     }
 
     return json.data;
   } catch (error) {
     if (error instanceof FetchError) {
       throw new DiscordArtsError(
-        "API is currently down, try again later",
-        errorInfo
+        "API is currently down, try again later"
       );
     } else {
       throw new DiscordArtsError(
-        error?.message || "API is currently down, try again later",
-        errorInfo
+        error?.message || "API is currently down, try again later"
       );
     }
   }

@@ -5,11 +5,11 @@ const {
   statusImgs,
 } = require('../../public/profile-image.files.json');
 
-// const badgesOrder = require('../config/badges-order.json');
 const {
   parseUsername,
   abbreviateNumber,
   getDateOrString,
+  truncateText,
 } = require('../utils/strings.utils');
 const {
   parseImg,
@@ -30,8 +30,13 @@ async function getBadges(data, options) {
   const canvasBadges = [];
 
   for (const badge of badges.reverse()) {
-    const { icon } = badge;
-    const canvas = await loadImage(icon);
+    const { name, icon } = badge;
+    const canvas = await loadImage(icon).catch(() => {});
+    if (!canvas) {
+      throw new DiscordArtsError(
+        `Could not load badge: (${name})\nIf you think it is not a network problem, please report it in our discord: https://discord.gg/csedxqGQKP`
+      );
+    }
 
     canvasBadges.push({ canvas, x: 0, y: 15, w: 60 });
   }
@@ -42,7 +47,16 @@ async function getBadges(data, options) {
     }
 
     for (let i = 0; i < options.customBadges.length; i++) {
-      const canvas = await loadImage(parsePng(options.customBadges[i]));
+      const canvas = await loadImage(parsePng(options.customBadges[i])).catch(
+        () => {}
+      );
+      if (!canvas) {
+        const truncatedBadge = truncateText(options.customBadges[i], 30);
+        throw new DiscordArtsError(
+          `Could not load custom badge: (${truncatedBadge}), make sure that the image exists.`
+        );
+      }
+
       canvasBadges.push({ canvas, x: 10, y: 22, w: 46 });
     }
   }
@@ -62,7 +76,7 @@ async function genBase(options, avatarData, bannerData) {
   ).catch(() => {});
 
   if (!cardBackground) {
-    cardBackground = await loadImage(avatarData);
+    cardBackground = await loadImage(avatarData).catch(() => {});
     isBannerLoaded = false;
   }
 
@@ -140,9 +154,9 @@ async function genBorder(options) {
     borderColors.push(options.borderColor);
   else borderColors.push(...options.borderColor);
 
-  if (borderColors.length > 2)
+  if (borderColors.length > 20)
     throw new DiscordArtsError(
-      `Invalid borderColor length (${borderColors.length}) must be a maximum of 2 colors`
+      `Invalid borderColor length (${borderColors.length}) must be a maximum of 20 colors`
     );
 
   const gradX = options.borderAllign == 'vertical' ? 0 : 885;
@@ -151,7 +165,8 @@ async function genBorder(options) {
   const grd = ctx.createLinearGradient(0, 0, gradX, gradY);
 
   for (let i = 0; i < borderColors.length; i++) {
-    grd.addColorStop(i, parseHex(borderColors[i]));
+    const stop = i / (borderColors.length - 1);
+    grd.addColorStop(stop, parseHex(borderColors[i]))
   }
 
   ctx.fillStyle = grd;
@@ -468,9 +483,23 @@ function genXpBar(options) {
   ctx.roundRect(304, 187 - mY, 557, 36, [14]);
   ctx.clip();
 
-  ctx.fillStyle = barColor ? parseHex(barColor) : '#fff';
+  const barColors = [];
+  if (typeof barColor == 'string')
+    barColors.push(barColor);
+  else barColors.push(...barColor);
+
+  const barWidth = Math.round((currentXp * 556) / requiredXp)
+
+  const grd = ctx.createLinearGradient(304, 197, 860, 197);
+
+  for (let i = 0; i < barColors.length; i++) {
+    const stop = i / (barColors.length - 1);
+    grd.addColorStop(stop, parseHex(barColors[i]))
+  }
+
+  ctx.fillStyle = barColor ? grd : '#fff';
   ctx.beginPath();
-  ctx.roundRect(304, 187 - mY, Math.round((currentXp * 557) / requiredXp), 36, [
+  ctx.roundRect(304, 187 - mY, barWidth, 36, [
     14,
   ]);
   ctx.fill();
