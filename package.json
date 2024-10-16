@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "author": "iAsure",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "repository": {
     "type": "git",
     "url": "https://github.com/iAsure/discord-arts.git"
